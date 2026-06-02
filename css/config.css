@@ -1,0 +1,570 @@
+/* Grifasi Performance — Configuración (settings) */
+
+.cfg-root {
+  padding-top: 50px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.cfg-header {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  padding: 10px 14px;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  position: sticky;
+  top: 50px;
+  z-index: 5;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.cfg-title {
+  margin: 0;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+
+.cfg-body {
+  padding: 20px 0 24px;
+}
+
+/* ── Section ───────────────────────────────────────────────── */
+.cfg-section {
+  margin-bottom: 32px;
+}
+.cfg-section-label {
+  padding: 0 22px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+  text-transform: uppercase;
+}
+.cfg-section-footer {
+  padding: 10px 22px 0;
+  font-size: 11px;
+  color: var(--fg-3);
+  line-height: 1.5;
+}
+
+/* Group: bloque de filas con divisores estilo iOS */
+.cfg-group {
+  margin: 0 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ── Row ───────────────────────────────────────────────────── */
+.cfg-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 16px;
+  min-height: 60px;
+  border-bottom: 1px solid var(--line-soft);
+  background: transparent;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  color: var(--fg);
+  font-family: var(--font-sans);
+  text-align: left;
+  width: 100%;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.cfg-row:last-child { border-bottom: none; }
+.cfg-row.cfg-row-clickable { cursor: pointer; }
+.cfg-row.cfg-row-clickable:hover { background: color-mix(in oklab, var(--fg) 4%, transparent); }
+.cfg-row.cfg-row-clickable:active { background: color-mix(in oklab, var(--fg) 7%, transparent); }
+
+.cfg-row-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cfg-row-body { min-width: 0; }
+.cfg-row-label {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+.cfg-row-hint {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+.cfg-row-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.cfg-row-value {
+  font-size: 14px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+.cfg-row-chev { color: var(--fg-3); display: inline-flex; }
+.cfg-action-link {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Cuando la fila tiene un control inline grande (segmented/input),
+   pasamos a row stacked en mobile para evitar overflow. */
+.cfg-row:has(.cfg-seg),
+.cfg-row:has(.cfg-input) {
+  grid-template-columns: 32px 1fr;
+  grid-template-rows: auto auto;
+  row-gap: 8px;
+}
+.cfg-row:has(.cfg-seg) .cfg-row-right,
+.cfg-row:has(.cfg-input) .cfg-row-right {
+  grid-column: 1 / -1;
+  justify-content: stretch;
+}
+.cfg-row:has(.cfg-seg) .cfg-seg,
+.cfg-row:has(.cfg-input) .cfg-input {
+  width: 100%;
+}
+
+/* ── Segmented control ────────────────────────────────────── */
+.cfg-seg {
+  display: inline-flex;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+.cfg-seg-btn {
+  flex: 1;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--fg-2);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.cfg-seg-btn:hover { color: var(--fg); }
+.cfg-seg-btn.active {
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 1px 2px oklch(0 0 0 / 0.12);
+}
+
+/* ── Input inline ─────────────────────────────────────────── */
+.cfg-input {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-3);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  outline: 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.cfg-input.mono { font-family: var(--font-mono); }
+.cfg-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
+}
+.cfg-input::placeholder { color: var(--fg-3); }
+
+/* ── Status badge ──────────────────────────────────────────── */
+.cfg-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.cfg-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.cfg-status-on  {
+  background: color-mix(in oklab, var(--ok) 16%, transparent);
+  color: var(--ok);
+}
+.cfg-status-on  .cfg-status-dot {
+  background: var(--ok);
+  box-shadow: 0 0 0 0 var(--ok);
+  animation: cfg-status-pulse 1.8s ease-out infinite;
+}
+@keyframes cfg-status-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--ok) 55%, transparent); }
+  100% { box-shadow: 0 0 0 7px color-mix(in oklab, var(--ok) 0%, transparent); }
+}
+.cfg-status-off {
+  background: color-mix(in oklab, var(--crit) 16%, transparent);
+  color: var(--crit);
+}
+.cfg-status-off .cfg-status-dot { background: var(--crit); }
+
+/* ── Credit row (Hookia) ───────────────────────────────────── */
+.cfg-row-credit {
+  grid-template-columns: 32px 1fr auto;
+}
+.cfg-credit-actions {
+  display: flex;
+  gap: 8px;
+}
+.cfg-credit-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  color: var(--fg-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.08s;
+}
+.cfg-credit-btn:hover {
+  background: color-mix(in oklab, var(--accent) 14%, var(--bg-3));
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.cfg-credit-btn:active { transform: scale(0.94); }
+
+/* ── Logout ────────────────────────────────────────────────── */
+.cfg-logout-wrap {
+  padding: 20px 16px 8px;
+  display: flex;
+  justify-content: center;
+}
+.cfg-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--crit) 14%, var(--bg-2));
+  border: 1px solid color-mix(in oklab, var(--crit) 30%, var(--line));
+  color: var(--crit);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.08s;
+}
+.cfg-logout:hover { background: color-mix(in oklab, var(--crit) 20%, var(--bg-2)); }
+.cfg-logout:active { transform: scale(0.97); }
+.cfg-logout-icon { display: inline-flex; }
+
+.cfg-spacer { flex: 1 0 auto; min-height: 14px; }
+
+/* Bottom nav sticky */
+.cfg-root .bottom-nav {
+  position: sticky;
+  inset: auto;
+  bottom: 0;
+  z-index: 5;
+}
+
+/* ────────────────────────────────────────────────────────── */
+/* Desktop                                                  */
+/* ────────────────────────────────────────────────────────── */
+.dk-cfg-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 28px;
+  align-items: start;
+}
+/* Hasta 1279px el panel del Tip baja y el contenido ocupa todo el ancho,
+   así las filas no se aplastan en monitores medianos. */
+@media (max-width: 1279px) {
+  .dk-cfg-grid { grid-template-columns: 1fr; }
+  .dk-cfg-side { flex-direction: row; flex-wrap: wrap; }
+  .dk-cfg-side > * { flex: 1 1 280px; }
+}
+
+.dk-cfg-main {
+  max-width: 820px;
+  /* Las cards reales del desktop son .dk-card (no .cfg-section). Las separamos
+     con gap del contenedor para que no queden pegadas. */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+/* (legacy) por si alguna vista aún usara .cfg-section dentro del main */
+.dk-cfg-main .cfg-section { margin-bottom: 0; }
+.dk-cfg-main .cfg-section-label {
+  padding: 0 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.dk-cfg-main .cfg-group {
+  margin: 0;
+  border-radius: 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  overflow: hidden;
+}
+.dk-cfg-main .cfg-row {
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  column-gap: 16px;
+  padding: 18px 22px;
+  min-height: 68px;
+  align-items: center;
+}
+.dk-cfg-main .cfg-row-body { min-width: 0; }
+.dk-cfg-main .cfg-row-label { white-space: nowrap; }
+.dk-cfg-main .cfg-row-hint { white-space: normal; }
+/* En desktop la fila aloja segmented/input inline a la derecha */
+.dk-cfg-main .cfg-row:has(.cfg-seg),
+.dk-cfg-main .cfg-row:has(.cfg-input) {
+  grid-template-rows: auto;
+  row-gap: 0;
+}
+.dk-cfg-main .cfg-row:has(.cfg-seg) .cfg-row-right,
+.dk-cfg-main .cfg-row:has(.cfg-input) .cfg-row-right {
+  grid-column: auto;
+  justify-content: flex-end;
+}
+.dk-cfg-main .cfg-row:has(.cfg-input) .cfg-input { width: clamp(180px, 32vw, 280px); }
+.dk-cfg-main .cfg-row:has(.cfg-seg) .cfg-seg { flex-wrap: wrap; justify-content: flex-end; }
+.dk-cfg-main .cfg-section-footer { padding: 10px 4px 0; }
+
+/* Filas dentro de las cards desktop (Negocio / Bot / Acciones): NO tienen
+   ícono (solo body + right). Sin esta regla heredan la grilla de 36px y el
+   título/descripción caen en esa columna angosta y se parten palabra por
+   palabra. Usamos 2 columnas y dejamos el padding horizontal a la card. */
+.dk-cfg-main .dk-card .cfg-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 20px;
+  padding: 14px 0;
+  min-height: 0;
+}
+.dk-cfg-main .dk-card .cfg-row:first-child { padding-top: 0; }
+.dk-cfg-main .dk-card .cfg-row:last-child  { padding-bottom: 0; }
+.dk-cfg-main .dk-card .cfg-row-hint { white-space: normal; max-width: 52ch; }
+
+/* Sidebar derecha — perfil + health */
+.dk-cfg-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: calc(var(--dk-topbar-h) + 24px);
+}
+.dk-cfg-side-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 22px 22px;
+}
+.dk-cfg-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 24%, var(--bg-3));
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+.dk-cfg-account-name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.dk-cfg-account-role {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.dk-cfg-account-meta {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+.dk-cfg-account-actions {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.dk-cfg-health {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.dk-cfg-health li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.dk-cfg-health li:last-child { border-bottom: none; }
+.dk-cfg-health-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.dk-cfg-health li.ok   .dk-cfg-health-dot { background: var(--ok);   box-shadow: 0 0 0 3px color-mix(in oklab, var(--ok) 22%, transparent); }
+.dk-cfg-health li.warn .dk-cfg-health-dot { background: var(--warn); box-shadow: 0 0 0 3px color-mix(in oklab, var(--warn) 22%, transparent); }
+.dk-cfg-health li.crit .dk-cfg-health-dot { background: var(--crit); box-shadow: 0 0 0 3px color-mix(in oklab, var(--crit) 22%, transparent); }
+.dk-cfg-health-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+}
+.dk-cfg-health-sub {
+  font-size: 11px;
+  color: var(--fg-3);
+  margin-top: 2px;
+}
+
+.dk-cfg-tip {
+  background: color-mix(in oklab, var(--accent) 12%, var(--bg-2));
+  border: 1px solid color-mix(in oklab, var(--accent) 38%, var(--line));
+  padding: 18px 20px;
+  border-radius: 14px;
+}
+/* El <p> del tip no lleva clase: aseguramos contraste con texto principal. */
+.dk-cfg-tip p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg);
+  font-weight: 500;
+}
+.dk-cfg-tip-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dk-cfg-tip-eyebrow::before {
+  content: '';
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+.dk-cfg-tip-body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg);
+  font-weight: 500;
+}
+
+/* Logout block en desktop — alinear izquierda, no centrar */
+.dk-cfg-main .cfg-logout-wrap {
+  padding: 8px 0 4px;
+  justify-content: flex-start;
+}
+
+/* ── Social buttons (desktop sidebar) ───────────────────────── */
+.dk-cfg-social {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dk-cfg-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  color: var(--fg-2);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.08s;
+}
+.dk-cfg-social-btn:hover {
+  background: color-mix(in oklab, var(--accent) 12%, var(--bg-3));
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.dk-cfg-social-btn:active { transform: scale(0.97); }
+
+.dk-cfg-social-wsp {
+  color: #25D366;
+  border-color: color-mix(in oklab, #25D366 35%, var(--line));
+}
+.dk-cfg-social-wsp:hover {
+  background: color-mix(in oklab, #25D366 14%, var(--bg-3));
+  color: #25D366;
+  border-color: #25D366;
+}
+
+.dk-cfg-by {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--fg-3);
+  text-align: center;
+}

@@ -1,0 +1,1328 @@
+/* Grifasi Performance — Desktop chrome
+   Layout web con sidebar + topbar. Hereda tokens de dashboard.css.
+   Se activa cuando el componente envuelve con .dk-shell (web mode). */
+
+.dk-shell {
+  --dk-sidebar-w: 260px;
+  --dk-topbar-h: 76px;
+  --dk-content-pad: 32px;
+  --dk-max: 1440px;
+
+  display: grid;
+  grid-template-columns: var(--dk-sidebar-w) 1fr;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+}
+.dk-shell.no-sidebar { grid-template-columns: 1fr; }
+.dk-shell *, .dk-shell *::before, .dk-shell *::after { box-sizing: border-box; }
+
+/* Forzar el viewport a tomar la altura completa cuando estamos en modo web */
+html[data-view="web"], html[data-view="web"] body { height: 100%; min-height: 100vh; }
+html[data-view="web"] body { padding: 0 !important; align-items: stretch !important; }
+html[data-view="web"] #root { width: 100%; min-height: 100vh; display: block; }
+
+/* ── Sidebar ───────────────────────────────────────────────── */
+.dk-sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 18px 18px;
+  background: var(--bg-2);
+  border-right: 1px solid var(--line-soft);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.dk-sb-brand {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  padding: 4px 8px 8px;
+}
+.dk-sb-brand-mark {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 28px;
+}
+.dk-sb-brand-mark > span {
+  display: block;
+  width: 5px;
+  background: var(--accent);
+  border-radius: 1.5px;
+}
+.dk-sb-brand-mark > span:nth-child(1) { height: 16px; }
+.dk-sb-brand-mark > span:nth-child(2) { height: 22px; }
+.dk-sb-brand-mark > span:nth-child(3) { height: 28px; }
+.dk-sb-brand-text { display: flex; flex-direction: column; line-height: 1; }
+.dk-sb-brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fg);
+}
+.dk-sb-brand-sub {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--fg-3);
+  margin-top: 3px;
+}
+
+.dk-sb-eyebrow {
+  margin: 22px 12px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--fg-3);
+  text-transform: uppercase;
+}
+
+.dk-sb-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dk-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--fg-2);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+.dk-nav-item:hover {
+  background: color-mix(in oklab, var(--fg) 5%, transparent);
+  color: var(--fg);
+}
+.dk-nav-item.active {
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.dk-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+.dk-nav-icon {
+  display: inline-flex;
+  width: 24px;
+  justify-content: center;
+}
+.dk-nav-label { flex: 1; }
+.dk-nav-badge {
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--crit);
+  color: oklch(0.98 0 0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.dk-sb-spacer { flex: 1; min-height: 16px; }
+
+.dk-sb-foot {
+  padding: 12px 8px 4px;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dk-sb-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dk-sb-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 24%, var(--bg-3));
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.dk-sb-user-info { min-width: 0; line-height: 1.2; }
+.dk-sb-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dk-sb-user-role {
+  font-size: 11px;
+  color: var(--fg-3);
+  margin-top: 2px;
+}
+.dk-sb-version {
+  font-size: 10px;
+  color: var(--fg-3);
+  letter-spacing: 0.04em;
+  padding: 0 4px;
+}
+
+/* ── Main ──────────────────────────────────────────────────── */
+.dk-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg);
+}
+
+/* ── TopBar ────────────────────────────────────────────────── */
+.dk-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: var(--dk-topbar-h);
+  padding: 16px 32px;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  border-bottom: 1px solid var(--line-soft);
+}
+.dk-topbar.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.dk-tb-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+.dk-tb-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 12px 0 8px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--fg-2);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.dk-tb-back:hover { background: var(--bg-2); color: var(--fg); }
+.dk-tb-title-block { min-width: 0; }
+.dk-tb-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.dk-tb-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+  color: var(--fg);
+}
+.dk-tb-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+.dk-tb-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.dk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.08s, filter 0.15s, background 0.15s;
+  border: 1px solid transparent;
+}
+.dk-btn:active { transform: scale(0.97); }
+.dk-btn-icon { display: inline-flex; }
+
+.dk-btn-default {
+  background: var(--bg-2);
+  border-color: var(--line);
+  color: var(--fg);
+}
+.dk-btn-default:hover {
+  background: color-mix(in oklab, var(--accent) 8%, var(--bg-3));
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--line));
+  color: var(--accent-2, var(--accent));
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+.dk-btn-ghost {
+  background: transparent;
+  color: var(--fg-2);
+}
+.dk-btn-ghost:hover {
+  background: color-mix(in oklab, var(--accent) 10%, var(--bg-2));
+  color: var(--accent-2, var(--accent));
+}
+
+.dk-btn-primary {
+  background: linear-gradient(160deg, var(--accent-2) 0%, var(--accent) 55%, var(--accent-deep) 100%);
+  color: oklch(0.99 0.005 80);
+  border-color: var(--accent);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.18) inset,
+    0 4px 12px color-mix(in oklab, var(--accent) 38%, transparent);
+}
+[data-theme="light"] .dk-btn-primary { color: oklch(0.99 0 0); }
+.dk-btn-primary:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.18) inset,
+    0 10px 26px color-mix(in oklab, var(--accent) 60%, transparent);
+}
+
+.dk-btn-success {
+  background: var(--ok);
+  color: oklch(0.99 0.005 152);
+  border-color: var(--ok);
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--ok) 32%, transparent);
+}
+.dk-btn-success:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 10px 24px color-mix(in oklab, var(--ok) 55%, transparent);
+}
+.dk-btn-danger {
+  background: var(--crit);
+  color: oklch(0.99 0.005 25);
+  border-color: var(--crit);
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--crit) 32%, transparent);
+}
+.dk-btn-danger:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 10px 24px color-mix(in oklab, var(--crit) 55%, transparent);
+}
+
+/* ── Content ───────────────────────────────────────────────── */
+.dk-content {
+  flex: 1;
+  padding: 28px var(--dk-content-pad) 48px;
+  max-width: var(--dk-max);
+  width: 100%;
+  margin: 0 auto;
+}
+.dk-content.wide { max-width: none; }
+
+/* ── Card primitive ────────────────────────────────────────── */
+.dk-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  padding: 22px;
+}
+.dk-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+.dk-card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.dk-card-count {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+.dk-card-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+}
+.dk-card-link:hover { text-decoration: underline; }
+
+/* ── Search input topbar ──────────────────────────────────── */
+.dk-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  min-width: 320px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.dk-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 16%, transparent);
+}
+.dk-search-icon { color: var(--fg-3); display: inline-flex; }
+.dk-search-input {
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+.dk-search-input::placeholder { color: var(--fg-3); font-weight: 400; }
+
+/* ── Dashboard ─────────────────────────────────────────────── */
+.dk-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.dk-metric {
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dk-metric-accent {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 14%, var(--bg-2)) 0%, var(--bg-2) 70%);
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
+}
+.dk-metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.dk-metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.dk-metric-value {
+  font-size: 42px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--fg);
+}
+.dk-metric-delta {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+.dk-metric-badge {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--crit);
+  color: oklch(0.98 0 0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.dk-grid-2-1 {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 1199px) {
+  .dk-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .dk-grid-2-1 { grid-template-columns: 1fr; }
+}
+
+/* Table primitive */
+.dk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.dk-table thead th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-3);
+  text-align: left;
+  padding: 0 10px 10px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.dk-table thead th.num   { text-align: center; }
+.dk-table thead th.right { text-align: right; }
+.dk-table tbody td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: middle;
+  color: var(--fg);
+}
+.dk-table tbody tr:last-child td { border-bottom: none; }
+.dk-table tbody tr:hover { background: color-mix(in oklab, var(--fg) 3%, transparent); }
+.dk-table td.num   { text-align: center; }
+.dk-table td.right { text-align: right; }
+.dk-tbl-name {
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+}
+.dk-tbl-mono { font-size: 12px; color: var(--fg-3); font-weight: 500; }
+.dk-tbl-min  { font-size: 13px; color: var(--fg-3); font-weight: 500; }
+
+.dk-btn-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dk-btn-mini:hover { background: color-mix(in oklab, var(--accent) 20%, transparent); }
+
+/* Movements list */
+.dk-moves-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.dk-move {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.dk-move:last-child { border-bottom: none; }
+.dk-move-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.dk-move.in  .dk-move-icon { background: var(--ok-bg);   color: var(--ok); }
+.dk-move.out .dk-move-icon { background: var(--crit-bg); color: var(--crit); }
+.dk-move-info { min-width: 0; }
+.dk-move-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dk-move-meta {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--fg-3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.dk-move-qty {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.dk-move-qty.qty-in  { color: var(--ok); }
+.dk-move-qty.qty-out { color: var(--crit); }
+
+/* ── Inventory desktop ────────────────────────────────────── */
+.dk-inv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.dk-inv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg-2);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.dk-inv-chip:hover { color: var(--fg); }
+.dk-inv-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: oklch(0.99 0.005 80);
+}
+[data-theme="light"] .dk-inv-chip.active { color: oklch(0.99 0 0); }
+.dk-inv-chip-count {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--fg) 8%, transparent);
+  color: var(--fg-3);
+  font-weight: 600;
+}
+.dk-inv-chip.active .dk-inv-chip-count {
+  background: color-mix(in oklab, oklch(0 0 0) 22%, transparent);
+  color: oklch(0.99 0.005 80);
+}
+
+/* Card que va flush con la tabla por dentro */
+.dk-card-flush { padding: 0; overflow: hidden; }
+/* El header (título "Críticos"/"Advertencia") sí necesita su propio padding;
+   sin esto quedaba pegado al borde y casi encima de la tabla. Flujo normal,
+   sin position absolute ni márgenes negativos. */
+.dk-card-flush .dk-card-head {
+  padding: 18px 20px 14px;
+  margin-bottom: 0;
+}
+.dk-card-flush .dk-table { font-size: 14px; }
+.dk-card-flush .dk-table thead th {
+  padding: 14px 16px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--line);
+}
+.dk-card-flush .dk-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.dk-inv-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--bg-3);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 4px,
+    color-mix(in oklab, var(--fg) 5%, transparent) 4px,
+    color-mix(in oklab, var(--fg) 5%, transparent) 5px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-soft);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--fg-3);
+}
+.dk-inv-brand { font-weight: 500; color: var(--fg-2); font-size: 13px; }
+.dk-inv-cat {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--fg) 6%, transparent);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-2);
+}
+
+.dk-btn-mini-ghost {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+}
+.dk-btn-mini-ghost:hover { background: color-mix(in oklab, var(--accent) 10%, transparent); }
+
+.dk-inv-empty {
+  padding: 64px 24px;
+  text-align: center;
+}
+.dk-inv-empty-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+.dk-inv-empty-sub {
+  font-size: 13px;
+  color: var(--fg-3);
+}
+
+/* Search input en topbar de inventory */
+.dk-topbar .dk-search { min-width: 280px; }
+
+/* ── Detail desktop ──────────────────────────────────────── */
+.dk-det-grid {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1199px) {
+  .dk-det-grid { grid-template-columns: 1fr; }
+}
+
+.dk-det-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Reusamos los mismos componentes que el mobile pero los aflojamos para desktop */
+.dk-det-left .stock-card { margin: 0; }
+.dk-det-left .stock-card-num { font-size: 80px; }
+.dk-det-left .stock-card-inner { padding: 26px 26px 22px 30px; gap: 28px; }
+.dk-det-left .data-grid { margin: 0; }
+
+/* Acciones de stock (Agregar / Retirar / Editar) en el detalle desktop */
+.dk-det-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dk-det-actions .dk-btn {
+  height: 46px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+
+.dk-det-right .dk-card { padding: 18px; }
+.dk-hist-groups { display: flex; flex-direction: column; gap: 14px; max-height: 720px; overflow-y: auto; padding-right: 4px; }
+.dk-hist-groups::-webkit-scrollbar { width: 6px; }
+.dk-hist-groups::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.dk-hist-day {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--fg-3);
+  padding: 4px 4px 6px;
+}
+.dk-hist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-3);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+}
+.dk-hist-list .hist-row {
+  padding: 10px 12px;
+  min-height: 52px;
+  background: transparent;
+  border-bottom: 1px solid var(--line-soft);
+}
+.dk-hist-list .hist-row:last-child { border-bottom: none; }
+
+/* ── Create Product desktop ──────────────────────────────── */
+.dk-create-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1199px) {
+  .dk-create-grid { grid-template-columns: 1fr; }
+}
+.dk-create-form { padding: 8px 22px 22px; }
+.dk-create-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: calc(var(--dk-topbar-h) + 24px);
+}
+
+.dk-create-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+}
+.dk-cs-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dk-create-status-ok {
+  border-color: color-mix(in oklab, var(--ok) 38%, var(--line));
+  background: color-mix(in oklab, var(--ok) 8%, var(--bg-2));
+}
+.dk-create-status-ok .dk-cs-icon { background: var(--ok); color: oklch(0.99 0.005 152); }
+.dk-create-status-warn {
+  border-color: color-mix(in oklab, var(--warn) 38%, var(--line));
+  background: color-mix(in oklab, var(--warn) 8%, var(--bg-2));
+}
+.dk-create-status-warn .dk-cs-icon { background: var(--warn); color: oklch(0.18 0.05 75); }
+.dk-cs-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fg);
+}
+.dk-cs-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--fg-2);
+}
+
+.dk-create-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.dk-create-preview .thumb-lg { width: 64px; height: 64px; }
+.dk-create-preview-info { min-width: 0; }
+.dk-create-preview-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+}
+.dk-create-preview-brand {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+.dk-create-preview-cat {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+.dk-create-preview-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--fg-2);
+}
+
+.dk-create-origin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dk-create-origin-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--line-soft);
+  font-size: 13px;
+}
+.dk-create-origin-row:last-child { border-bottom: none; padding-bottom: 0; }
+.dk-create-origin-label {
+  color: var(--fg-3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.dk-create-origin-val {
+  color: var(--fg);
+  font-weight: 500;
+  text-align: right;
+}
+
+.dk-btn-block {
+  width: 100%;
+  height: 48px;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.dk-create-loading {
+  padding: 60px 24px;
+  display: flex;
+  justify-content: center;
+}
+.dk-create-loading .cr-loading { padding: 0; }
+
+/* ── ScanModal desktop (centrado, dialog) ─────────────────── */
+.dk-scan-backdrop {
+  position: fixed;
+  inset: 0;
+  background: oklch(0 0 0 / 0.68);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+.dk-scan-backdrop *, .dk-scan-backdrop *::before, .dk-scan-backdrop *::after {
+  box-sizing: border-box;
+}
+.dk-scan-modal {
+  width: 100%;
+  max-width: 880px;
+  max-height: calc(100vh - 48px);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 30px 80px oklch(0 0 0 / 0.6);
+  position: relative;
+  min-width: 0;
+}
+
+/* Cuando el modal está abierto, bloqueamos el overflow horizontal del documento */
+.dk-scan-backdrop ~ *, body:has(.dk-scan-backdrop) { overflow-x: hidden; }
+html:has(.dk-scan-backdrop), body:has(.dk-scan-backdrop) {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+.dk-scan-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line-soft);
+  flex-shrink: 0;
+}
+.dk-scan-modal-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--bg-3);
+  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.dk-scan-modal-close:hover { background: color-mix(in oklab, var(--fg) 10%, var(--bg-3)); }
+
+.dk-scan-modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.dk-scan-modal-left {
+  padding: 28px 30px;
+  border-right: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.dk-scan-modal-right {
+  padding: 28px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+/* Stepper más compacto dentro del modal desktop para no desbordar */
+.dk-scan-modal-right .sc-stepper {
+  grid-template-columns: 60px 1fr 60px;
+  gap: 10px;
+}
+.dk-scan-modal-right .sc-step-btn { width: 60px; height: 76px; }
+.dk-scan-modal-right .sc-step-num { height: 76px; padding: 6px; }
+.dk-scan-modal-right .sc-step-num-value { font-size: 42px; }
+.dk-scan-modal-name {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.dk-scan-modal-product-extra {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dk-scan-pe-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.dk-scan-pe-row:last-child { border-bottom: none; }
+.dk-scan-pe-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.dk-scan-pe-val { color: var(--fg); font-size: 14px; font-weight: 600; }
+
+.dk-scan-modal-right .sc-section { padding: 0; }
+.dk-scan-modal-right .sc-input { height: 48px; }
+
+.dk-scan-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--line-soft);
+  background: var(--bg-3);
+  flex-shrink: 0;
+}
+.dk-scan-modal-confirm {
+  min-width: 200px;
+  height: 48px;
+  font-size: 15px;
+  justify-content: center;
+}
+
+.dk-scan-modal-toast {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+.dk-scan-modal-toast .toast { box-shadow: 0 14px 30px oklch(0 0 0 / 0.45); }
+
+@media (max-width: 768px) {
+  .dk-scan-modal-body { grid-template-columns: 1fr; }
+  .dk-scan-modal-left { border-right: 0; border-bottom: 1px solid var(--line-soft); }
+}
+
+/* ── Login desktop (split) ────────────────────────────────── */
+.dk-login {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  background: var(--bg);
+}
+.dk-login-brand-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 56px;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 30%, color-mix(in oklab, var(--accent) 22%, transparent) 0%, transparent 60%),
+    var(--bg-2);
+  border-right: 1px solid var(--line-soft);
+}
+.dk-login-brand-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 480px;
+  margin-top: 12vh;
+}
+.dk-login-brand-text { line-height: 1; }
+.dk-login-brand-name {
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+}
+.dk-login-brand-sub {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: var(--fg-3);
+}
+.dk-login-tagline {
+  margin: 24px 0 0;
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--fg-2);
+  font-weight: 400;
+  text-wrap: pretty;
+}
+.dk-login-brand-foot {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+}
+
+.dk-login-pin-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+.dk-login-pin-card {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.dk-login-pin-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+.dk-login-pin-title {
+  margin: 8px 0 6px;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--fg);
+}
+.dk-login-pin-sub {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--fg-3);
+}
+.dk-login-pin-screen { width: 100%; }
+.dk-login-pin-screen .login-root { padding-top: 0; padding-bottom: 0; }
+.dk-login-pin-screen .login-brand { display: none; }
+.dk-login-pin-screen .pin-display { padding: 12px 0 6px; }
+.dk-login-pin-screen .pin-pad { padding: 18px 0 8px; }
+.dk-login-pin-screen .login-foot { padding: 0; }
+
+@media (max-width: 900px) {
+  .dk-login { grid-template-columns: 1fr; min-height: auto; }
+  .dk-login-brand-panel { padding: 32px; border-right: 0; border-bottom: 1px solid var(--line-soft); }
+  .dk-login-brand-stack { margin-top: 0; }
+  .dk-login-brand-name { font-size: 36px; }
+}
+@media (max-width: 1023px) {
+  .dk-shell {
+    grid-template-columns: 1fr;
+  }
+  .dk-sidebar {
+    display: none;
+  }
+  .dk-content {
+    padding: 20px 16px 40px;
+  }
+  .dk-topbar {
+    padding: 12px 16px;
+  }
+  .dk-tb-title { font-size: 20px; }
+}
+
+/* ── Botones de header sin funcionalidad implementada ─────────
+   Se ocultan hasta que se desarrollen sus features. Quitar este
+   bloque (o el data-action correspondiente) cuando se implementen:
+   sort=ordenar inventario, more=opciones de producto,
+   flash=linterna del escáner, filter=filtrar bajo stock. */
+.icon-btn[data-action="sort"],
+.icon-btn[data-action="more"],
+.icon-btn[data-action="flash"],
+.icon-btn[data-action="filter"] {
+  display: none !important;
+}
+
+/* ── Marco de la app — switch responsivo mobile ↔ desktop ─────
+   En móvil (≤1023px) el frame es .pwa-web (480px tarjeta centrada),
+   sidebar/topbar ocultos, dk-main/dk-content como display:contents
+   para no interferir con el flow móvil.
+   En desktop (≥1024px) #app pasa a comportarse como .dk-shell:
+   grid sidebar (260px) + main, ancho completo, sin altura fija. */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: #131210 !important;
+}
+/* Mantiene la cadena de alturas en móvil (views dentro de dk-content) */
+#app .dk-content > [id^="view-"] {
+  height: 100%;
+}
+
+/* ── Toggle markup móvil/desktop ────────────────────────────── */
+.dk-only { display: none; }
+
+/* ── Móvil (≤1023): shell oculto, tarjeta .pwa-web visible ──── */
+@media (max-width: 1023px) {
+  #app.pwa-web > .dk-sidebar,
+  #app.pwa-web > .dk-main > .dk-topbar {
+    display: none !important;
+  }
+  /* dk-main y dk-content como passthrough → el layout queda idéntico al móvil de hoy */
+  #app.pwa-web > .dk-main,
+  #app.pwa-web > .dk-main > .dk-content {
+    display: contents;
+  }
+}
+
+/* Sombra de tarjeta centrada SOLO en el rango móvil intermedio (tablet) */
+@media (min-width: 760px) and (max-width: 1023px) {
+  #app.pwa-web {
+    box-shadow: 0 0 0 1px color-mix(in oklab, #ffffff 7%, transparent),
+                0 28px 70px -22px rgba(0, 0, 0, 0.65);
+  }
+}
+
+/* ── Desktop (≥1024): #app actúa como .dk-shell ─────────────── */
+@media (min-width: 1024px) {
+  .mobile-only { display: none !important; }
+  .dk-only { display: block; }
+
+  #app.pwa-web {
+    /* Neutralizar reglas .pwa-web (dashboard.css:69-77) */
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+    margin: 0;
+    overflow: visible;
+    box-shadow: none;
+    background: var(--bg);
+    /* Aplicar comportamiento .dk-shell */
+    display: grid;
+    grid-template-columns: var(--dk-sidebar-w, 260px) 1fr;
+    --dk-sidebar-w: 260px;
+    --dk-topbar-h: 76px;
+    --dk-content-pad: 32px;
+    --dk-max: 1440px;
+  }
+  #app.pwa-web > .dk-sidebar { display: flex; }
+  #app.pwa-web > .dk-main    { display: flex; flex-direction: column; min-width: 0; }
+  #app.pwa-web > .dk-main > .dk-content { flex: 1; min-width: 0; }
+
+  /* La cadena móvil 100% deja de aplicar (views fluyen en alto natural) */
+  #app.pwa-web .dk-content > [id^="view-"] { height: auto; min-height: 0; }
+  #app.pwa-web .pwa-root { width: 100%; height: auto; min-height: 0; overflow: visible; }
+  /* En cada vista que tenga su rama desktop (.dk-only hermana), ocultamos el
+     contenido móvil. Si no hay .dk-only (escáner, crear-producto, scan-modal,
+     login pre-Fase 3), dejamos visible el móvil para no mostrar una pantalla
+     vacía. */
+  #app.pwa-web .dk-content > [id^="view-"]:has(> .dk-only) > .pwa-root { display: none !important; }
+
+  /* Caso 2: vistas (dashboard, bajo-stock) donde .dk-only quedó ANIDADO dentro
+     de .pwa-root en vez de ser hermano del view. La regla de arriba no las
+     cubre, así que ocultamos los hermanos móviles de .dk-only directamente.
+     Sin esto, el contenido móvil se filtra y se renderiza doble en desktop. */
+  #app.pwa-web .pwa-root:has(> .dk-only) > :not(.dk-only) { display: none !important; }
+
+  /* Ocultar headers móviles y bottom-nav: el topbar/sidebar los reemplazan */
+  #app.pwa-web .dash-header,
+  #app.pwa-web .dash .greet,
+  #app.pwa-web .inv-header,
+  #app.pwa-web .det-header,
+  #app.pwa-web .sn-header,
+  #app.pwa-web .ls-header,
+  #app.pwa-web .cfg-header,
+  #app.pwa-web .cr-header,
+  #app.pwa-web .bottom-nav { display: none !important; }
+
+  /* Anular padding-top reservado para la barra de estado de iOS */
+  #app.pwa-web .dash,
+  #app.pwa-web .inv-root,
+  #app.pwa-web .det-root,
+  #app.pwa-web .sc-root,
+  #app.pwa-web .cr-root,
+  #app.pwa-web .ls-root,
+  #app.pwa-web .cfg-root,
+  #app.pwa-web .sn-root,
+  #app.pwa-web .login-root { padding-top: 0; }
+
+  /* En la pantalla de login no aparece el shell (no hay sesión) */
+  html[data-route="login"] #app.pwa-web {
+    grid-template-columns: 1fr;
+  }
+  html[data-route="login"] #app.pwa-web > .dk-sidebar,
+  html[data-route="login"] #app.pwa-web > .dk-main > .dk-topbar {
+    display: none !important;
+  }
+}

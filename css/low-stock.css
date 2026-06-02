@@ -1,0 +1,452 @@
+/* Grifasi Performance — Bajo stock */
+
+.ls-root {
+  padding-top: 50px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.ls-header {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  padding: 10px 14px;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  position: sticky;
+  top: 50px;
+  z-index: 5;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.ls-title {
+  margin: 0;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+.ls-title-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 24px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--crit);
+  color: oklch(0.98 0 0);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ── Summary cards ─────────────────────────────────────────── */
+.ls-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px 16px 18px;
+}
+.ls-sum {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line-soft);
+  min-height: 76px;
+}
+.ls-sum-crit {
+  background: color-mix(in oklab, var(--crit) 14%, var(--bg-2));
+  border-color: color-mix(in oklab, var(--crit) 40%, var(--line));
+}
+.ls-sum-warn {
+  background: color-mix(in oklab, var(--warn) 14%, var(--bg-2));
+  border-color: color-mix(in oklab, var(--warn) 40%, var(--line));
+}
+.ls-sum-num {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.ls-sum-crit .ls-sum-num { color: var(--crit); }
+.ls-sum-warn .ls-sum-num { color: var(--warn); }
+
+.ls-sum-info { min-width: 0; }
+.ls-sum-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+.ls-sum-sub {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+/* ── Section ───────────────────────────────────────────────── */
+.ls-section { padding: 14px 16px 14px; }
+.ls-section + .ls-section { margin-top: 8px; }
+.ls-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+.ls-section-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px color-mix(in oklab, currentColor 22%, transparent);
+}
+.ls-section-dot-crit { background: var(--crit); color: var(--crit); }
+.ls-section-dot-warn { background: var(--warn); color: var(--warn); }
+.ls-section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.ls-section-count {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.ls-section-count-crit {
+  background: color-mix(in oklab, var(--crit) 16%, transparent);
+  color: var(--crit);
+}
+.ls-section-count-warn {
+  background: color-mix(in oklab, var(--warn) 16%, transparent);
+  color: var(--warn);
+}
+
+/* ── List ──────────────────────────────────────────────────── */
+.ls-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ls-item {
+  position: relative;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+.ls-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.ls-crit::before { background: var(--crit); }
+.ls-warn::before { background: var(--warn); }
+
+.ls-item-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ls-item-info { min-width: 0; }
+.ls-item-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+.ls-item-meta {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+.ls-item-brand { color: var(--fg-2); }
+.ls-item-cat   { color: var(--fg-3); }
+
+/* Botón Reponer */
+.ls-reponer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1.5px solid currentColor;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.08s;
+}
+.ls-reponer:active { transform: scale(0.96); }
+.ls-reponer-crit { color: var(--crit); background: color-mix(in oklab, var(--crit) 14%, transparent); }
+.ls-reponer-warn { color: var(--warn); background: color-mix(in oklab, var(--warn) 14%, transparent); }
+.ls-reponer-crit:hover { background: color-mix(in oklab, var(--crit) 22%, transparent); }
+.ls-reponer-warn:hover { background: color-mix(in oklab, var(--warn) 22%, transparent); }
+
+/* Progress bar */
+.ls-bar-row { padding: 2px 0; }
+.ls-bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bg-3);
+  overflow: hidden;
+}
+.ls-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+.ls-fill-crit { background: var(--crit); }
+.ls-fill-warn { background: var(--warn); }
+
+.ls-status-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 500;
+}
+.ls-status-cur { color: var(--fg); font-size: 13px; font-weight: 600; }
+.ls-status-cur strong { font-weight: 700; }
+.ls-crit-text { color: var(--crit); }
+.ls-warn-text { color: var(--warn); }
+.ls-status-min { color: var(--fg-3); }
+
+/* ── Empty state ───────────────────────────────────────────── */
+.ls-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  gap: 14px;
+}
+.ls-empty-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--ok) 18%, transparent);
+  color: var(--ok);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ls-empty-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.ls-empty-sub {
+  font-size: 13px;
+  color: var(--fg-3);
+  line-height: 1.5;
+}
+
+.ls-spacer { flex: 1 0 auto; min-height: 14px; }
+
+/* Bottom nav sticky */
+.ls-root .bottom-nav {
+  position: sticky;
+  inset: auto;
+  bottom: 0;
+  z-index: 5;
+}
+
+/* ────────────────────────────────────────────────────────── */
+/* Desktop                                                  */
+/* ────────────────────────────────────────────────────────── */
+.dk-ls-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1199px) {
+  .dk-ls-summary { grid-template-columns: 1fr; }
+}
+
+/* Separar las tablas "Críticos" y "Advertencia" entre sí. Estaban pegadas
+   porque .dk-only es un bloque sin gap y .dk-card no tiene margen propio. */
+#view-bajo-stock .dk-only > .dk-card + .dk-card { margin-top: 24px; }
+
+.dk-ls-sum {
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid var(--line-soft);
+  background: var(--bg-2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dk-ls-sum-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dk-ls-sum-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dk-ls-sum-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.dk-ls-sum-num {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--fg);
+}
+.dk-ls-sum-sub {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+.dk-ls-sum-crit {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--crit) 18%, var(--bg-2)) 0%, var(--bg-2) 70%);
+  border-color: color-mix(in oklab, var(--crit) 40%, var(--line));
+}
+.dk-ls-sum-crit .dk-ls-sum-dot   { background: var(--crit); box-shadow: 0 0 0 3px color-mix(in oklab, var(--crit) 22%, transparent); }
+.dk-ls-sum-crit .dk-ls-sum-label { color: var(--crit); }
+.dk-ls-sum-crit .dk-ls-sum-num   { color: var(--crit); }
+
+.dk-ls-sum-warn {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--warn) 18%, var(--bg-2)) 0%, var(--bg-2) 70%);
+  border-color: color-mix(in oklab, var(--warn) 40%, var(--line));
+}
+.dk-ls-sum-warn .dk-ls-sum-dot   { background: var(--warn); box-shadow: 0 0 0 3px color-mix(in oklab, var(--warn) 22%, transparent); }
+.dk-ls-sum-warn .dk-ls-sum-label { color: var(--warn); }
+.dk-ls-sum-warn .dk-ls-sum-num   { color: var(--warn); }
+
+.dk-ls-sum-info .dk-ls-sum-dot { background: var(--fg-2); }
+.dk-ls-sum-info .dk-ls-sum-num { color: var(--fg); }
+
+/* Table sections */
+.dk-ls-card-crit { margin-bottom: 20px; border-color: color-mix(in oklab, var(--crit) 25%, var(--line)); }
+.dk-ls-card-warn { margin-bottom: 20px; border-color: color-mix(in oklab, var(--warn) 25%, var(--line)); }
+
+.dk-ls-table-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--line);
+}
+.dk-ls-table-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dk-ls-table-dot-crit { background: var(--crit); box-shadow: 0 0 0 3px color-mix(in oklab, var(--crit) 22%, transparent); }
+.dk-ls-table-dot-warn { background: var(--warn); box-shadow: 0 0 0 3px color-mix(in oklab, var(--warn) 22%, transparent); }
+.dk-ls-table-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+.dk-ls-table-spacer { flex: 1; }
+.dk-ls-table-hint {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+.dk-table-ls .dk-tbl-name { font-size: 14px; }
+.dk-table-ls .dk-ls-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+
+.dk-ls-pulse {
+  text-align: center;
+  width: 36px;
+  padding: 0 !important;
+}
+.dk-ls-pulse-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.dk-ls-pulse-crit { background: var(--crit); box-shadow: 0 0 0 0 var(--crit); animation: dk-ls-pulse-crit 1.8s ease-out infinite; }
+.dk-ls-pulse-warn { background: var(--warn); box-shadow: 0 0 0 0 var(--warn); }
+@keyframes dk-ls-pulse-crit {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--crit) 55%, transparent); }
+  100% { box-shadow: 0 0 0 9px color-mix(in oklab, var(--crit) 0%, transparent); }
+}
+
+.dk-ls-bar-cell { width: 180px; min-width: 140px; }
+.dk-ls-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bg-3);
+  position: relative;
+  overflow: hidden;
+}
+.dk-ls-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+}
+.dk-ls-bar-crit { background: var(--crit); }
+.dk-ls-bar-warn { background: var(--warn); }
+
+.dk-ls-deficit { color: var(--fg-2); font-weight: 600; }
+
+.dk-ls-empty-card {
+  padding: 0;
+}
+.dk-ls-empty-card .ls-empty { padding: 80px 24px; }

@@ -1,0 +1,227 @@
+/* Grifasi Performance — Login PIN
+   Hereda tokens base de dashboard.css; agrega solo los componentes login/pin. */
+
+/* ── Layout pantalla ──────────────────────────────────────── */
+.login-root {
+  padding-top: 50px;
+  padding-bottom: 34px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ── Marca ────────────────────────────────────────────────── */
+.login-brand {
+  padding: 36px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.brand-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.brand-mark-lg {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 56px;
+}
+.brand-mark-lg > span {
+  display: block;
+  width: 9px;
+  background: linear-gradient(180deg, var(--accent-2) 0%, var(--accent) 55%, var(--accent-deep) 100%);
+  border-radius: 2px;
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.12) inset,
+    0 4px 14px color-mix(in oklab, var(--accent) 40%, transparent);
+}
+.brand-mark-lg > span:nth-child(1) { height: 30px; }
+.brand-mark-lg > span:nth-child(2) { height: 44px; }
+.brand-mark-lg > span:nth-child(3) { height: 56px; }
+
+.brand-wordmark {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1;
+}
+.brand-wordmark-name {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--fg);
+}
+.brand-wordmark-sub {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.38em;
+  color: var(--fg-3);
+}
+.login-tag {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  color: var(--fg-3);
+}
+
+/* ── Dots indicator ───────────────────────────────────────── */
+.pin-display {
+  padding: 24px 24px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  justify-content: flex-end;
+  min-height: 0;
+}
+.pin-dots {
+  display: flex;
+  gap: 18px;
+  height: 22px;
+  align-items: center;
+}
+.pin-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1.5px solid var(--fg-3);
+  transition: transform 0.18s cubic-bezier(.34,1.56,.64,1),
+              background 0.15s, border-color 0.15s;
+}
+.pin-dot.filled {
+  background: var(--fg);
+  border-color: var(--fg);
+  transform: scale(1.05);
+}
+.pin-dots.state-error .pin-dot {
+  border-color: var(--crit);
+}
+.pin-dots.state-error .pin-dot.filled {
+  background: var(--crit);
+  border-color: var(--crit);
+}
+.pin-dots.state-success .pin-dot {
+  border-color: var(--ok);
+}
+.pin-dots.state-success .pin-dot.filled {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+
+/* Shake al fallar */
+@keyframes pin-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-10px); }
+  30% { transform: translateX(9px); }
+  45% { transform: translateX(-7px); }
+  60% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+  90% { transform: translateX(1px); }
+}
+.shake { animation: pin-shake 0.45s cubic-bezier(.36,.07,.19,.97) both; }
+
+/* ── Texto de ayuda / error ───────────────────────────────── */
+.pin-help {
+  margin: 0;
+  min-height: 22px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s;
+}
+.help-idle    { color: var(--fg-2); }
+.help-error   { color: var(--crit); }
+.help-success { color: var(--ok); }
+.help-icon { display: inline-flex; }
+
+/* ── Teclado ──────────────────────────────────────────────── */
+.pin-pad {
+  padding: 28px 28px 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 24px;
+  justify-items: center;
+}
+.pin-key {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s ease-out, background 0.12s, border-color 0.12s;
+}
+.pin-key:active {
+  transform: scale(0.92);
+  background: color-mix(in oklab, var(--accent) 16%, var(--bg-2));
+  border-color: var(--accent);
+}
+.pin-key-empty {
+  background: transparent;
+  border: none;
+  pointer-events: none;
+}
+.pin-key-back {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--fg-2);
+}
+.pin-key-back:active {
+  background: color-mix(in oklab, var(--fg) 6%, transparent);
+  border-color: transparent;
+  color: var(--fg);
+}
+.pin-key-num {
+  font-family: var(--font-mono);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--fg);
+}
+.pin-key-sub {
+  margin-top: 2px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--fg-3);
+  line-height: 1;
+}
+
+/* ── Pie ──────────────────────────────────────────────────── */
+.login-foot {
+  padding: 8px 24px 12px;
+  display: flex;
+  justify-content: center;
+}
+.link-button {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.link-button:active { opacity: 0.6; }

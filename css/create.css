@@ -1,0 +1,466 @@
+/* Grifasi Performance — Crear producto (modal full-screen)
+   Hereda tokens y reusa estilos del scan-modal.css (sc-dock, sc-confirm, sc-cancel). */
+
+.cr-root {
+  padding-top: 50px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.cr-header {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-soft);
+  background: color-mix(in oklab, var(--bg) 90%, transparent);
+}
+.cr-header-title {
+  margin: 0;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+
+.cr-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 24px;
+}
+
+/* ── Status banner ─────────────────────────────────────────── */
+.cr-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 20px 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+}
+.cr-status-ok {
+  background: color-mix(in oklab, var(--ok) 14%, var(--bg-2));
+  border: 1px solid color-mix(in oklab, var(--ok) 40%, var(--line));
+}
+.cr-status-warn {
+  background: color-mix(in oklab, var(--warn) 14%, var(--bg-2));
+  border: 1px solid color-mix(in oklab, var(--warn) 40%, var(--line));
+}
+.cr-status-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cr-status-ok   .cr-status-icon { background: var(--ok);   color: oklch(0.99 0.005 152); }
+.cr-status-warn .cr-status-icon { background: var(--warn); color: oklch(0.18 0.05 75); }
+
+.cr-status-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+.cr-status-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-2);
+}
+
+/* ── Found hero (thumb + nombre/marca) ────────────────────── */
+.found-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 20px 12px;
+}
+.thumb-lg {
+  width: 80px;
+  height: 80px;
+  border-radius: 14px;
+  background-color: var(--bg-3);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 6px,
+    color-mix(in oklab, var(--fg) 6%, transparent) 6px,
+    color-mix(in oklab, var(--fg) 6%, transparent) 7px
+  );
+  border: 1px solid var(--line-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.thumb-lg-code {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+}
+.found-hero-info { min-width: 0; }
+.found-hero-name {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.found-hero-brand {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+/* Banner sutil "Datos obtenidos…" */
+.found-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 18px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--accent) 10%, transparent);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.found-banner-icon { display: inline-flex; flex-shrink: 0; }
+
+/* ── Form sections ─────────────────────────────────────────── */
+.form-section {
+  padding: 12px 20px 6px;
+  border-top: 1px solid var(--line-soft);
+  margin-top: 8px;
+}
+.form-section:first-of-type { border-top: none; margin-top: 0; padding-top: 4px; }
+.form-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.form-section-sub {
+  font-size: 12px;
+  color: var(--fg-3);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+/* ── Form row ──────────────────────────────────────────────── */
+.form-row {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.form-req {
+  color: var(--crit);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+.form-hint {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--fg-3);
+  margin-left: 4px;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+.form-grid-2 .form-row { margin-top: 14px; }
+
+/* SKU pill (readonly) */
+.form-sku-pill {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px dashed var(--line);
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Text input */
+.form-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: var(--bg-2);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  outline: 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.form-input::placeholder { color: var(--fg-3); font-weight: 400; }
+.form-input.readonly { background: var(--bg-3); border-style: dashed; color: var(--fg-2); }
+
+/* Textarea */
+.form-textarea {
+  width: 100%;
+  min-height: 88px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: var(--bg-2);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  line-height: 1.4;
+  outline: 0;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.form-textarea::placeholder { color: var(--fg-3); }
+
+/* Number input (with $ prefix) */
+.form-num {
+  display: flex;
+  align-items: stretch;
+  height: 52px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: var(--bg-2);
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-num:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.form-num-prefix {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  background: var(--bg-3);
+  color: var(--fg-2);
+  font-size: 17px;
+  font-weight: 600;
+  border-right: 1px solid var(--line);
+}
+.form-num-input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0 14px;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+  min-width: 0;
+}
+.form-num-input::placeholder { color: var(--fg-3); }
+
+/* Category chips */
+.cat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cat-chip {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg-2);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.cat-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: oklch(0.99 0.005 80);
+}
+[data-theme="light"] .cat-chip.active { color: oklch(0.99 0 0); }
+
+/* Unit picker */
+.unit-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.unit-chip {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg-2);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.unit-chip.active {
+  background: color-mix(in oklab, var(--accent) 16%, var(--bg-2));
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Loading ───────────────────────────────────────────────── */
+.cr-loading {
+  padding: 80px 32px 40px;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  /* display controlado por la máquina de estados — ver abajo */
+}
+.spinner {
+  width: 56px;
+  height: 56px;
+  position: relative;
+}
+.spinner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4px solid color-mix(in oklab, var(--fg) 12%, transparent);
+  border-top-color: var(--accent);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.cr-loading-title {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  margin-top: 8px;
+}
+.cr-loading-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-3);
+  text-align: center;
+}
+.cr-loading-sku {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px dashed var(--line);
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ── Dock ──────────────────────────────────────────────────── */
+.cr-dock { position: sticky; bottom: 0; }
+.cr-dock-loading { padding-top: 16px; }
+.cr-cancel-big {
+  width: 100%;
+  height: 52px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cr-cancel-big:active { transform: scale(0.985); }
+
+/* ──────────────────────────────────────────────────────────────
+   Máquina de estados: .cr-root[data-state="..."]
+   Controla exactamente qué paneles son visibles en cada estado.
+   ────────────────────────────────────────────────────────────── */
+
+/* 1. Ocultar TODOS los paneles condicionales por defecto.
+      Sobreescribe cualquier display anterior (incluye .cr-loading que
+      tenía display:flex y pisaba el atributo [hidden] del HTML). */
+.cr-loading,
+#cr-status-found,
+#cr-status-unknown,
+#cr-status-cancelled,
+.found-hero,
+.found-banner,
+.cr-dock-loading {
+  display: none;
+}
+
+/* ── Estado "Cancelada" ─────────────────────────────────────── */
+.cr-status-cancelled {
+  background: color-mix(in oklab, var(--fg) 6%, var(--bg-2));
+  border: 1px solid var(--line);
+}
+.cr-status-cancelled .cr-status-icon {
+  background: color-mix(in oklab, var(--fg) 14%, transparent);
+  color: var(--fg-2);
+}
+
+/* 2. estado = "loading" → spinner + botón Cancelar búsqueda;
+      ocultar el dock principal. */
+.cr-root[data-state="loading"] .cr-loading        { display: flex; }
+.cr-root[data-state="loading"] .cr-dock-loading   { display: block; }
+.cr-root[data-state="loading"] [data-state-default] { display: none; }
+
+/* 3. estado = "found" → banner verde + hero + info sobre datos auto */
+.cr-root[data-state="found"] #cr-status-found { display: flex; }
+.cr-root[data-state="found"] .found-hero      { display: flex; }
+.cr-root[data-state="found"] .found-banner    { display: flex; }
+
+/* 4. estado = "unknown" → solo banner amarillo, el form queda vacío */
+.cr-root[data-state="unknown"] #cr-status-unknown { display: flex; }
+
+/* 5. estado = "idle" → formulario limpio sin banners (default: todo oculto) */
+
+/* 6. estado = "cancelled" → aviso discreto + formulario manual */
+.cr-root[data-state="cancelled"] #cr-status-cancelled { display: flex; }

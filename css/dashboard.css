@@ -1,0 +1,742 @@
+/* Grifasi Performance — Dashboard PWA
+   Tokens en CSS variables. Funciona dark/light vía [data-theme]. */
+
+:root {
+  --accent: #E07A3C;
+  --accent-2: #EC8A4A;      /* hover / glow más vivo */
+  --accent-deep: #B85F25;   /* pressed / sombras */
+  --accent-soft: color-mix(in oklab, #E07A3C 14%, transparent);
+  --accent-ring: color-mix(in oklab, #E07A3C 38%, transparent);
+
+  /* Tipografía */
+  --font-sans: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* JetBrains Mono: cero limpio, tabular-nums, diseño moderno. */
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Consolas', monospace;
+
+  /* Escala (mobile-first, gloves-friendly) */
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-17: 17px;
+  --fs-19: 19px;
+  --fs-22: 22px;
+  --fs-28: 28px;
+  --fs-34: 34px;
+
+  /* Estados (oklch, equivalente percibido similar al rojo/ámbar/verde) */
+  --ok:   oklch(0.72 0.14 152);
+  --warn: oklch(0.78 0.14 75);
+  --crit: oklch(0.66 0.18 25);
+}
+
+/* ── Dark (default) — tokens globales para que cascadeen a .pwa-root Y .dk-shell ─────────────── */
+html[data-theme="dark"] {
+  --bg:        oklch(0.165 0.008 55);
+  --bg-2:      oklch(0.215 0.009 58);
+  --bg-3:      oklch(0.255 0.010 60);
+  --bg-elev:   oklch(0.235 0.010 58);
+  --line:      oklch(0.34 0.008 60);
+  --line-soft: oklch(0.29 0.008 60);
+
+  --fg:        oklch(0.975 0.006 80);
+  --fg-2:      oklch(0.80 0.009 70);
+  --fg-3:      oklch(0.605 0.010 70);
+
+  --ok-bg:   oklch(0.32 0.07 152 / 0.5);
+  --warn-bg: oklch(0.35 0.08 75 / 0.55);
+  --crit-bg: oklch(0.36 0.10 25 / 0.55);
+
+  --shadow:
+    0 1px 0 oklch(1 0 0 / 0.045) inset,
+    0 0 0 1px oklch(1 0 0 / 0.045),
+    0 6px 18px oklch(0 0 0 / 0.22);
+}
+
+/* ── Light ─────────────────────────────────────────────────── */
+html[data-theme="light"] {
+  --bg:        oklch(0.985 0.004 80);
+  --bg-2:      oklch(1 0 0);
+  --bg-3:      oklch(0.955 0.005 80);
+  --bg-elev:   oklch(1 0 0);
+  --line:      oklch(0.88 0.007 80);
+  --line-soft: oklch(0.935 0.007 80);
+
+  --fg:        oklch(0.165 0.006 80);
+  --fg-2:      oklch(0.40 0.009 80);
+  --fg-3:      oklch(0.54 0.010 80);
+
+  --ok-bg:   oklch(0.93 0.05 152);
+  --warn-bg: oklch(0.94 0.06 75);
+  --crit-bg: oklch(0.93 0.07 25);
+
+  --shadow:
+    0 1px 2px oklch(0 0 0 / 0.045),
+    0 0 0 1px oklch(0 0 0 / 0.045),
+    0 4px 14px oklch(0 0 0 / 0.05);
+}
+
+/* ── Modo web (sin frame iOS) ───────────────────────────── */
+.pwa-web {
+  width: min(100vw, 480px);
+  height: 100vh;
+  max-height: 100vh;
+  margin: 0 auto;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--fg) 6%, transparent);
+}
+.pwa-web .pwa-root {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+/* Sin status bar: bajamos el padding superior */
+.pwa-web .dash { padding-top: 8px; }
+.pwa-web .dash-header { top: 0; }
+.pwa-web .inv-root, .pwa-web .det-root,
+.pwa-web .login-root, .pwa-web .sc-root, .pwa-web .cr-root {
+  padding-top: 8px;
+}
+.pwa-web .inv-header, .pwa-web .det-header, .pwa-web .cr-header {
+  top: 0;
+}
+.pwa-web .cfg-root, .pwa-web .sn-root { padding-top: 8px; }
+.pwa-web .cfg-header, .pwa-web .sn-header { top: 0; }
+
+/* Página entera en modo web: sin centrado vertical, sin padding */
+html[data-view="web"] body {
+  padding: 0 !important;
+  align-items: stretch !important;
+  min-height: 100vh;
+}
+html[data-view="web"] #root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+/* ── Anti-FOUC: ocultar todas las vistas hasta que el router decida ──
+   Sin esta regla, en el primer paint puede aparecer cualquier vista que
+   no tenga `style="display:none"` inline (1ms de flash de inventario o
+   ventas antes de que pin-app/router se monten). */
+[id^="view-"]:not(#view-login) {
+  display: none;
+}
+/* Una vez que el router corrió, las display:block inline winnan sobre esto. */
+
+.pwa-root {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-17);
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "calt" 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.pwa-root::-webkit-scrollbar { display: none; }
+.pwa-root *, .pwa-root *::before, .pwa-root *::after { box-sizing: border-box; }
+.pwa-root button { font-family: inherit; }
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.01em;
+}
+
+/* ── Layout principal (deja espacio para status bar + home indicator) ── */
+.dash {
+  padding-top: 50px;   /* status bar */
+  padding-bottom: 100px; /* nav + home indicator */
+  min-height: 100%;
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.dash-header {
+  position: sticky;
+  top: 50px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  background: color-mix(in oklab, var(--bg) 88%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 32px;
+}
+.brand-mark-bar {
+  display: block;
+  width: 5px;
+  background: linear-gradient(180deg, var(--accent-2) 0%, var(--accent) 55%, var(--accent-deep) 100%);
+  border-radius: 1.5px;
+  box-shadow: 0 1px 0 oklch(1 0 0 / 0.10) inset, 0 2px 6px color-mix(in oklab, var(--accent) 35%, transparent);
+}
+.brand-mark-bar:nth-child(1) { height: 18px; }
+.brand-mark-bar:nth-child(2) { height: 26px; }
+.brand-mark-bar:nth-child(3) { height: 32px; }
+.brand-text { display: flex; flex-direction: column; line-height: 1; }
+.brand-name {
+  font-size: var(--fs-17);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+}
+.brand-sub {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--fg-3);
+  margin-top: 3px;
+}
+
+.header-scan {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.15s, color 0.15s, box-shadow 0.18s, background 0.15s;
+}
+.header-scan:hover {
+  border-color: var(--accent);
+  color: var(--accent-2, var(--accent));
+  background: color-mix(in oklab, var(--accent) 8%, var(--bg-2));
+  box-shadow: 0 6px 16px color-mix(in oklab, var(--accent) 28%, transparent);
+}
+.header-scan:active { transform: scale(0.94); }
+
+/* ── Saludo ────────────────────────────────────────────────── */
+.greet { padding: 20px 20px 16px; }
+.greet-title {
+  margin: 0;
+  font-size: var(--fs-28);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.greet-sub {
+  margin: 4px 0 0;
+  font-size: var(--fs-12);
+  font-weight: 500;
+  color: var(--fg-3);
+  letter-spacing: 0.08em;
+}
+
+/* ── Métricas ──────────────────────────────────────────────── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 14px 20px 20px;
+}
+.metric {
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  padding: 14px 12px 12px;
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+}
+.dash[data-compact="true"] .metric { min-height: 84px; padding: 10px; }
+.metric-label {
+  font-size: var(--fs-12);
+  font-weight: 500;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  line-height: 1.2;
+  min-height: 2.4em; /* reserva 2 líneas para que el número quede alineado entre cards */
+}
+.metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 8px;
+}
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-28);
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.dash[data-compact="true"] .metric-value { font-size: var(--fs-22); }
+.metric-delta {
+  font-size: var(--fs-12);
+  color: var(--fg-3);
+  margin-top: 6px;
+  font-weight: 500;
+}
+.badge-dot {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--crit);
+  color: oklch(0.98 0 0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ── Sección ───────────────────────────────────────────────── */
+.section { padding: 14px 20px 20px; }
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.section-title-wrap { display: flex; align-items: baseline; gap: 10px; }
+.section-title {
+  margin: 0;
+  font-size: var(--fs-19);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.section-count {
+  font-size: var(--fs-13);
+  color: var(--fg-3);
+  font-weight: 500;
+}
+.section-link {
+  font-size: var(--fs-14);
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ── Mensaje vacío ─────────────────────────────────────────── */
+.empty-msg {
+  padding: 28px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--fg-3);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ── Lista bajo stock ──────────────────────────────────────── */
+.lowstock-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lowstock-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px 12px 18px;
+  min-height: 64px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.lowstock-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.lowstock-row.sev-crit .lowstock-bar { background: var(--crit); }
+.lowstock-row.sev-warn .lowstock-bar { background: var(--warn); }
+.lowstock-row.sev-ok   .lowstock-bar { background: var(--ok); }
+
+.lowstock-info { flex: 1; min-width: 0; }
+.lowstock-name {
+  font-size: var(--fs-15);
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lowstock-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: var(--fs-12);
+  color: var(--fg-3);
+}
+.dot-sep { color: var(--fg-3); opacity: 0.6; }
+
+.stock-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: var(--fs-12);
+  font-weight: 500;
+}
+.stock-pill strong { font-weight: 700; }
+.stock-crit { background: var(--crit-bg); color: var(--crit); }
+.stock-warn { background: var(--warn-bg); color: var(--warn); }
+.stock-ok   { background: var(--ok-bg);   color: var(--ok); }
+
+.btn-reponer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  background: var(--accent-soft);
+  color: var(--accent-2);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: transform 0.1s, background 0.15s, border-color 0.15s;
+}
+.btn-reponer:hover {
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+}
+.btn-reponer:active { transform: scale(0.96); }
+.btn-reponer-icon { display: inline-flex; }
+
+/* ── Lista movimientos ─────────────────────────────────────── */
+.moves-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.move-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  min-height: 60px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.move-row:last-child { border-bottom: none; }
+
+.move-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.move-in  .move-icon { background: var(--ok-bg);   color: var(--ok); }
+.move-out .move-icon { background: var(--crit-bg); color: var(--crit); }
+
+.move-info { flex: 1; min-width: 0; }
+.move-name {
+  font-size: var(--fs-15);
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.move-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: var(--fs-12);
+  color: var(--fg-3);
+}
+.move-type { font-weight: 500; }
+.move-time { font-weight: 500; }
+
+.move-qty {
+  font-size: var(--fs-17);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.qty-in  { color: var(--ok); }
+.qty-out { color: var(--crit); }
+
+.dash-footer-spacer { height: 8px; }
+
+/* ── Bottom nav ────────────────────────────────────────────── */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: end;
+  padding: 8px 8px 28px;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid var(--line-soft);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  min-height: 56px;
+  background: transparent;
+  border: 0;
+  color: var(--fg-3);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.nav-item span:last-child { line-height: 1; }
+.nav-item.active { color: var(--fg); }
+.nav-item.active svg { stroke-width: 2; }
+.nav-item:active { opacity: 0.6; }
+
+.nav-item-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--crit);
+  color: oklch(0.98 0 0);
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 2px solid var(--bg);
+}
+
+.nav-fab {
+  color: var(--fg);
+}
+.nav-fab-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(160deg, var(--accent-2) 0%, var(--accent) 55%, var(--accent-deep) 100%);
+  color: oklch(0.99 0.005 80);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -16px;
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.18) inset,
+    0 -2px 6px oklch(0 0 0 / 0.18) inset,
+    0 10px 22px color-mix(in oklab, var(--accent) 55%, transparent),
+    0 2px 6px color-mix(in oklab, var(--accent-deep) 50%, transparent),
+    0 0 0 4px var(--bg);
+}
+[data-theme="light"] .nav-fab-circle {
+  color: oklch(0.99 0 0);
+}
+
+/* ── Toast global (capa fija, fuera del flujo scrolleable) ──── */
+.app-toast-host {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  width: max-content;
+  max-width: min(92vw, 440px);
+}
+.app-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  color: oklch(0.99 0.01 152);
+  background: var(--ok, #22c55e);
+  box-shadow: 0 12px 30px oklch(0 0 0 / 0.34), 0 0 0 1px oklch(1 0 0 / 0.08) inset;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.app-toast.is-in  { opacity: 1; transform: translateY(0); }
+.app-toast.is-out { opacity: 0; transform: translateY(-10px); }
+.app-toast-error  { background: var(--crit, #ef4444); color: oklch(0.99 0.01 25); }
+.app-toast-success { background: var(--ok, #22c55e); }
+
+/* En desktop, el shell tiene topbar fijo: bajamos un poco el host */
+@media (min-width: 1024px) {
+  .app-toast-host { top: 88px; }
+}
+
+/* ── Mini-header mobile para vistas con shell desktop (Ventas/Métricas) ──
+   En desktop orientan el sidebar + topbar; en mobile mostramos una barra
+   superior con "volver a Inicio". */
+.vm-header { display: none; }
+@media (max-width: 1023px) {
+  .vm-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: color-mix(in oklab, var(--bg) 92%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .vm-back {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 0;
+    background: var(--bg-2);
+    color: var(--fg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .vm-title {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--fg);
+  }
+}
+
+/* ── Accesos rápidos a Ventas/Métricas desde Inicio (rama mobile) ──── */
+.dash-quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 6px 20px 4px;
+}
+.dash-quick-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.08s, background 0.15s;
+}
+.dash-quick-btn svg { color: var(--accent); flex-shrink: 0; transition: color 0.15s; }
+.dash-quick-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.dash-quick-badge {
+  position: absolute;
+  top: -7px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--crit);
+  color: oklch(0.98 0 0);
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 2px solid var(--bg-2);
+}
+.dash-quick-btn[data-view="bajo-stock"] svg { color: var(--crit); }
+.dash-quick-btn {
+  transition: transform 0.08s, background 0.15s, border-color 0.15s, box-shadow 0.18s;
+}
+.dash-quick-btn:hover {
+  background: color-mix(in oklab, var(--accent) 9%, var(--bg-2));
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--line));
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--accent) 20%, transparent);
+}
+.dash-quick-btn:hover svg { color: var(--accent-2, var(--accent)); }
+.dash-quick-btn:active { transform: scale(0.98); background: var(--bg-3); }
+
+/* Ventas/Métricas no usan .pwa-root; en mobile el frame .pwa-web es
+   height:100vh + overflow:hidden, así que la vista necesita su propio scroll. */
+@media (max-width: 1023px) {
+  #view-ventas,
+  #view-metricas {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

@@ -1,0 +1,495 @@
+/* Grifasi Performance — Modal full-screen post-escaneo
+   Hereda tokens de dashboard.css. */
+
+/* Overlay: se monta por encima de cualquier vista (detalle, escáner, inventario).
+   movements.js togglea display:block/none. */
+#view-scan-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+}
+#view-scan-modal > .pwa-root { min-height: 100%; }
+
+.sc-root {
+  padding-top: 50px;
+  padding-bottom: 0;
+  min-height: 100%;
+  position: relative;
+  background: var(--bg);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.sc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px 4px;
+}
+.sc-close {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 0;
+  background: var(--bg-2);
+  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.sc-close:active { transform: scale(0.94); }
+.sc-scan-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px 0 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--ok) 18%, transparent);
+  border: 1px solid color-mix(in oklab, var(--ok) 35%, var(--line));
+}
+.sc-scan-dot {
+  color: var(--ok);
+  display: inline-flex;
+  animation: scan-pulse 1.8s ease-in-out infinite;
+}
+@keyframes scan-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+.sc-scan-pill-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ok);
+  letter-spacing: 0.04em;
+}
+.sc-scan-pill-sku {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: 0;
+}
+
+/* ── Hero ──────────────────────────────────────────────────── */
+.sc-hero {
+  padding: 18px 20px 22px;
+}
+.sc-brand {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--fg-3);
+}
+.sc-name {
+  margin: 8px 0 14px;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.12;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.sc-stock-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.sc-stock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+.sc-stock-ok   { background: var(--ok-bg);   color: var(--ok); }
+.sc-stock-ok .sc-stock-dot   { background: var(--ok); }
+.sc-stock-warn { background: var(--warn-bg); color: var(--warn); }
+.sc-stock-warn .sc-stock-dot { background: var(--warn); }
+.sc-stock-crit { background: var(--crit-bg); color: var(--crit); }
+.sc-stock-crit .sc-stock-dot { background: var(--crit); }
+.sc-stock-text strong { font-weight: 700; }
+
+/* ── Secciones ─────────────────────────────────────────────── */
+.sc-section { padding: 0 20px 18px; }
+.sc-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.sc-section-label-opt {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+  color: var(--fg-3);
+  margin-left: 4px;
+}
+
+/* ── Toggle Entrada/Salida ────────────────────────────────── */
+.sc-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sc-tg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 60px;
+  border-radius: 16px;
+  border: 1.5px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg-2);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: transform 0.08s, background 0.18s, border-color 0.18s, color 0.18s;
+}
+.sc-tg:active { transform: scale(0.98); }
+.sc-tg svg { opacity: 0.65; transition: opacity 0.15s; }
+.sc-tg.active svg { opacity: 1; }
+.sc-tg-in.active {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: oklch(0.99 0.005 152);
+}
+.sc-tg-out.active {
+  background: var(--crit);
+  border-color: var(--crit);
+  color: oklch(0.99 0.005 25);
+}
+
+/* ── Stepper ──────────────────────────────────────────────── */
+.sc-stepper {
+  display: grid;
+  grid-template-columns: 72px 1fr 72px;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.sc-step-btn {
+  height: 88px;
+  border-radius: 18px;
+  border: 1.5px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.08s, background 0.15s, border-color 0.15s;
+}
+.sc-step-btn:active {
+  transform: scale(0.94);
+  background: color-mix(in oklab, var(--accent) 16%, var(--bg-2));
+  border-color: var(--accent);
+}
+.sc-step-num {
+  height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-2);
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  font-family: var(--font-sans);
+  color: var(--fg);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+.sc-step-num:active {
+  background: color-mix(in oklab, var(--accent) 10%, var(--bg-2));
+  border-color: var(--accent);
+}
+/* Hint de editabilidad: lápiz sutil en la esquina superior derecha */
+.sc-step-num::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 14px;
+  height: 14px;
+  background-color: var(--fg-3);
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14.7 5.3l4 4L9 19l-5 1 1-5z'/><path d='M13.3 6.7l4 4'/></svg>");
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14.7 5.3l4 4L9 19l-5 1 1-5z'/><path d='M13.3 6.7l4 4'/></svg>");
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  opacity: 0.55;
+}
+.sc-step-num-value {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+.sc-step-num-unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-3);
+  margin-top: 4px;
+}
+.sc-step-hint {
+  font-size: 12px;
+  color: var(--fg-3);
+  text-align: center;
+  font-weight: 500;
+}
+.sc-step-hint-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+}
+.sc-step-hint-num.invalid { color: var(--crit); }
+.sc-step-hint-err {
+  color: var(--crit);
+  font-weight: 600;
+}
+
+/* ── Input motivo ─────────────────────────────────────────── */
+.sc-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: var(--bg-2);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  outline: 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.sc-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.sc-input::placeholder { color: var(--fg-3); font-weight: 400; }
+
+/* ── Dock confirmar / cancelar ────────────────────────────── */
+.sc-dock {
+  padding: 12px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid var(--line-soft);
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+}
+.sc-confirm {
+  width: 100%;
+  height: 60px;
+  border-radius: 16px;
+  border: 0;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: transform 0.08s, filter 0.15s;
+}
+.sc-confirm:active { transform: scale(0.985); }
+.sc-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
+.sc-confirm-in  { background: var(--ok);   color: oklch(0.99 0.005 152); box-shadow: 0 6px 16px color-mix(in oklab, var(--ok) 35%, transparent); }
+.sc-confirm-out { background: var(--crit); color: oklch(0.99 0.005 25);  box-shadow: 0 6px 16px color-mix(in oklab, var(--crit) 35%, transparent); }
+
+.sc-cancel {
+  background: transparent;
+  border: 0;
+  height: 44px;
+  color: var(--fg-3);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.sc-cancel:active { color: var(--fg-2); }
+
+/* Hago que el dock siempre se quede pegado abajo del modal */
+.sc-root { display: flex; flex-direction: column; }
+.sc-root > .sc-dock { flex-shrink: 0; }
+
+/* ── Numpad ───────────────────────────────────────────────── */
+.np-backdrop {
+  position: absolute;
+  inset: 0;
+  background: oklch(0 0 0 / 0.55);
+  z-index: 20;
+  animation: fade-in 0.2s ease-out;
+}
+.np-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 21;
+  background: var(--bg-2);
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  padding: 14px 18px 28px;
+  animation: np-up 0.28s cubic-bezier(.2,.8,.2,1);
+  box-shadow: 0 -10px 30px oklch(0 0 0 / 0.35);
+}
+@keyframes np-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.np-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 14px;
+  border-bottom: 1px solid var(--line-soft);
+  margin-bottom: 14px;
+}
+.np-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--fg-3);
+  text-transform: uppercase;
+}
+.np-display {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: var(--fg);
+  line-height: 1;
+}
+.np-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.np-key {
+  height: 60px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--bg-3);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.08s, background 0.12s, border-color 0.12s;
+}
+.np-key:active {
+  transform: scale(0.94);
+  background: color-mix(in oklab, var(--accent) 16%, var(--bg-3));
+  border-color: var(--accent);
+}
+.np-key-action {
+  color: var(--fg-2);
+  background: transparent;
+}
+.np-key-action-text {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 600;
+}
+.np-confirm {
+  width: 100%;
+  height: 52px;
+  border-radius: 14px;
+  border: 0;
+  background: linear-gradient(160deg, var(--accent-2) 0%, var(--accent) 55%, var(--accent-deep) 100%);
+  color: oklch(0.99 0.005 80);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.18) inset,
+    0 6px 16px color-mix(in oklab, var(--accent) 38%, transparent);
+  transition: transform 0.1s, box-shadow 0.18s, filter 0.15s;
+}
+.np-confirm:hover {
+  filter: brightness(1.04);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.18) inset,
+    0 10px 26px color-mix(in oklab, var(--accent) 55%, transparent);
+}
+.np-confirm:active { transform: scale(0.985); }
+
+/* ── Toast ─────────────────────────────────────────────────── */
+.toast-wrap {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  padding: 0 20px;
+}
+/* El atributo HTML `hidden` debe ganarle al display:flex de arriba.
+   Sin este reset el toast del modal Agregar/Retirar aparece apenas se abre. */
+.toast-wrap[hidden] { display: none; }
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--ok);
+  color: oklch(0.99 0.005 152);
+  border-radius: 16px;
+  box-shadow:
+    0 14px 30px oklch(0 0 0 / 0.35),
+    0 0 0 1px oklch(1 0 0 / 0.1) inset;
+  animation: toast-in 0.34s cubic-bezier(.34,1.56,.64,1);
+  max-width: 340px;
+}
+@keyframes toast-in {
+  0%   { opacity: 0; transform: translateY(-16px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.toast-body { min-width: 0; }
+.toast-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+.toast-sub {
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 2px;
+  opacity: 0.92;
+}
+.toast-sub strong { font-weight: 700; }

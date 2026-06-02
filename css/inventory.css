@@ -1,0 +1,418 @@
+/* Grifasi Performance — Inventario
+   Hereda tokens de dashboard.css; agrega solo lo específico. */
+
+.inv-root {
+  padding-top: 50px;       /* status bar */
+  padding-bottom: 0;       /* nav vive dentro del flujo flex */
+  min-height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Spacer empuja el dock al fondo cuando el contenido no llena la altura */
+.inv-bottom-spacer {
+  flex: 1 0 auto;
+  min-height: 8px;
+}
+
+/* ── Header sticky ────────────────────────────────────────── */
+.inv-header {
+  position: sticky;
+  top: 50px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  padding: 10px 14px;
+  background: color-mix(in oklab, var(--bg) 90%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+.icon-btn:hover {
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  color: var(--accent-2, var(--accent));
+}
+.icon-btn:active { background: color-mix(in oklab, var(--fg) 8%, transparent); }
+.inv-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  text-align: center;
+}
+
+/* ── Búsqueda ─────────────────────────────────────────────── */
+.inv-search-wrap {
+  padding: 12px 16px 8px;
+}
+.inv-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 12px 0 14px;
+  border-radius: 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.inv-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.inv-search-icon { color: var(--fg-3); display: inline-flex; }
+.inv-search-input {
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+}
+.inv-search-input::placeholder { color: var(--fg-3); font-weight: 400; }
+.inv-search-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.inv-search-clear {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 0;
+  background: color-mix(in oklab, var(--fg) 14%, transparent);
+  color: var(--bg-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+[data-theme="light"] .inv-search-clear { color: oklch(0.99 0 0); }
+
+/* ── Chips de categoría (scroll horizontal) ───────────────── */
+.inv-chips-wrap {
+  position: relative;
+  padding-bottom: 12px;
+}
+.inv-chips-wrap::before,
+.inv-chips-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 12px;
+  width: 36px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.inv-chips-wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg) 30%, transparent);
+}
+.inv-chips-wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg) 30%, transparent);
+}
+.inv-chips-wrap.fade-left::before  { opacity: 1; }
+.inv-chips-wrap.fade-right::after  { opacity: 1; }
+
+/* Chevron-nudge sobre el fade derecho */
+.inv-chips-nudge {
+  /* Ocultas: no funcionaban bien y son redundantes (los chips ya scrollean con swipe). */
+  display: none !important;
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transform: translateY(calc(-50% - 6px)); /* compensa el padding-bottom del wrap */
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.18);
+}
+.inv-chips-nudge-right { right: 8px; }
+.inv-chips-nudge-left  { left: 8px; }
+.inv-chips-nudge:active { transform: translateY(calc(-50% - 6px)) scale(0.92); }
+
+/* Ocultar nudges en los extremos */
+.inv-chips-wrap:not(.fade-right) .inv-chips-nudge-right {
+  opacity: 0;
+  pointer-events: none;
+}
+.inv-chips-wrap:not(.fade-left) .inv-chips-nudge-left {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.inv-chips {
+  display: flex;
+  gap: 8px;
+  padding: 4px 16px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.inv-chips::-webkit-scrollbar { display: none; }
+
+.inv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--fg-2);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.inv-chip:active { transform: scale(0.96); }
+.inv-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: oklch(0.99 0.005 80);
+}
+[data-theme="light"] .inv-chip.active { color: oklch(0.99 0 0); }
+.inv-chip-count {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--fg) 8%, transparent);
+  color: var(--fg-3);
+  font-weight: 600;
+}
+.inv-chip.active .inv-chip-count {
+  background: color-mix(in oklab, oklch(0 0 0) 22%, transparent);
+  color: oklch(0.99 0.005 80);
+}
+
+/* ── Resumen ──────────────────────────────────────────────── */
+.inv-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 4px 20px 10px;
+}
+.inv-summary-count {
+  font-size: 13px;
+  color: var(--fg);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.inv-summary-label {
+  color: var(--fg-3);
+  font-weight: 500;
+  font-family: var(--font-sans);
+}
+.inv-summary-sort {
+  font-size: 13px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+/* ── Lista ────────────────────────────────────────────────── */
+.inv-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inv-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 12px;
+  min-height: 72px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  color: var(--fg);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.08s, background 0.15s, border-color 0.15s;
+}
+.inv-row:active {
+  transform: scale(0.985);
+  background: color-mix(in oklab, var(--accent) 6%, var(--bg-2));
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--line));
+}
+.inv-root[data-density="compact"] .inv-row {
+  min-height: 60px;
+  padding: 8px 10px;
+}
+
+/* Thumbnail placeholder con stripes diagonales */
+.inv-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background-color: var(--bg-3);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 4px,
+    color-mix(in oklab, var(--fg) 5%, transparent) 4px,
+    color-mix(in oklab, var(--fg) 5%, transparent) 5px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--line-soft);
+}
+.inv-root[data-density="compact"] .inv-thumb { width: 40px; height: 40px; }
+.inv-thumb-code {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+}
+
+.inv-row-info { min-width: 0; }
+.inv-row-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inv-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+.inv-brand { font-weight: 500; }
+.inv-sku { letter-spacing: 0; }
+
+.inv-row-stock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.stock-num {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  padding: 4px 9px;
+  border-radius: 8px;
+  min-width: 38px;
+  text-align: center;
+}
+.stock-num.stock-ok   { background: var(--ok-bg);   color: var(--ok); }
+.stock-num.stock-warn { background: var(--warn-bg); color: var(--warn); }
+.stock-num.stock-crit { background: var(--crit-bg); color: var(--crit); }
+.stock-min {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fg-3);
+  letter-spacing: 0.02em;
+}
+
+.inv-chev {
+  color: var(--fg-3);
+  display: inline-flex;
+  margin-left: -4px;
+}
+
+/* ── Estado vacío ─────────────────────────────────────────── */
+.inv-empty {
+  padding: 48px 24px;
+  text-align: center;
+}
+.inv-empty-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+.inv-empty-sub {
+  font-size: 13px;
+  color: var(--fg-3);
+  line-height: 1.5;
+}
+
+/* ── FAB (sticky, ancla al viewport del scroll) ───────────── */
+.inv-fab {
+  position: sticky;
+  inset: auto;
+  bottom: 116px;            /* por encima del nav */
+  align-self: flex-end;
+  margin: 0 18px -60px 0;   /* margin-bottom negativo: no ocupa altura en el flow */
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 0;
+  background: linear-gradient(160deg, var(--accent-2) 0%, var(--accent) 55%, var(--accent-deep) 100%);
+  color: oklch(0.99 0.005 80);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.18) inset,
+    0 8px 20px color-mix(in oklab, var(--accent) 45%, transparent);
+  transition: transform 0.1s, box-shadow 0.18s;
+  z-index: 6;
+}
+.inv-fab:hover {
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.18) inset,
+    0 12px 28px color-mix(in oklab, var(--accent) 65%, transparent);
+}
+
+/* ── Bottom nav: sticky al fondo del scroll ──────────────── */
+.inv-root .bottom-nav {
+  position: sticky;
+  inset: auto;
+  bottom: 0;
+  z-index: 5;
+}
+.inv-fab:active { transform: scale(0.94); }
+[data-theme="light"] .inv-fab { color: oklch(0.99 0 0); }

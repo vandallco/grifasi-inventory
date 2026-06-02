@@ -1,0 +1,2067 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#131210" />
+  <meta name="description" content="Inventario Performance · Inventario + WhatsApp para tu negocio" />
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Inventario Performance" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+
+  <title>Inventario Performance</title>
+
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Fuentes self-hosted: la app ya no depende de Google Fonts en runtime.
+       Preload del mono para que llegue antes de pintar texto numérico
+       (evita parpadeo con el cero rayado del fallback en iOS). -->
+  <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/fonts.css" />
+
+  <!-- Tokens base primero, luego pantallas en orden de dependencia -->
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/pin.css" />
+  <link rel="stylesheet" href="css/inventory.css" />
+  <link rel="stylesheet" href="css/detail.css" />
+  <link rel="stylesheet" href="css/scan-modal.css" />
+  <link rel="stylesheet" href="css/create.css" />
+  <link rel="stylesheet" href="css/scanner.css" />
+  <link rel="stylesheet" href="css/low-stock.css" />
+  <link rel="stylesheet" href="css/config.css" />
+  <link rel="stylesheet" href="css/guide.css" />
+  <link rel="stylesheet" href="css/desktop.css" />
+  <link rel="stylesheet" href="css/ventas.css" />
+  <link rel="stylesheet" href="css/metrics.css" />
+
+  <!-- Anti-FOUT: oculta el body hasta que JetBrains Mono cargue -->
+  <style>body{visibility:hidden}.wf-ready body{visibility:visible}</style>
+  <script>
+    document.fonts.load('1em "JetBrains Mono"').finally(function(){
+      document.documentElement.classList.add('wf-ready');
+    });
+  </script>
+</head>
+<body>
+  <div id="app" class="pwa-web">
+
+    <aside class="dk-sidebar" data-dk-sidebar></aside>
+    <main class="dk-main">
+      <header class="dk-topbar sticky" data-dk-topbar></header>
+      <div class="dk-content" data-dk-content>
+
+    <div id="view-login">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-login en index.html.
+     Hooks JS sugeridos:
+       button[data-digit]          → cada tecla numérica
+       button[data-action=backspace] → tecla de borrar
+       button[data-action=forgot]  → "¿Olvidaste tu PIN?"
+     Estados visuales (toggleables desde JS):
+       .pin-dots[data-state="idle|error|success"]
+       .pin-dot.filled               → cada dígito ingresado
+       .shake (envoltorio data-pin-shake) → animación de error
+       .pin-help.help-idle|help-error|help-success
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="login-root">
+
+    <header class="login-brand">
+      <div class="brand-stack">
+        <div class="brand-mark-lg" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="brand-wordmark">
+          <div class="brand-wordmark-name">INVENTARIO</div>
+          <div class="brand-wordmark-sub">PERFORMANCE</div>
+        </div>
+      </div>
+      <p class="login-tag mono">SUITE · v2.4</p>
+    </header>
+
+    <section class="pin-display">
+      <div data-pin-shake>
+        <div class="pin-dots state-idle" data-pin-dots aria-label="0 de 4 dígitos">
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+        </div>
+      </div>
+      <p class="pin-help help-idle" data-pin-help role="status" aria-live="polite">
+        <span>Ingresá tu PIN para continuar</span>
+      </p>
+    </section>
+
+    <section class="pin-pad" aria-label="Teclado numérico">
+      <button type="button" class="pin-key pin-key-digit" data-digit="1" aria-label="Tecla 1"><span class="pin-key-num mono">1</span></button>
+      <button type="button" class="pin-key pin-key-digit" data-digit="2" aria-label="Tecla 2"><span class="pin-key-num mono">2</span></button>
+      <button type="button" class="pin-key pin-key-digit" data-digit="3" aria-label="Tecla 3"><span class="pin-key-num mono">3</span></button>
+      <button type="button" class="pin-key pin-key-digit" data-digit="4" aria-label="Tecla 4"><span class="pin-key-num mono">4</span></button>
+      <button type="button" class="pin-key pin-key-digit" data-digit="5" aria-label="Tecla 5"><span class="pin-key-num mono">5</span></button>
+      <button type="button" class="pin-key pin-key-digit" data-digit="6" aria-label="Tecla 6"><span class="pin-key-num mono">6</span></button>
+      <button type="button" class="pin-key pin-key-digit" data-digit="7" aria-label="Tecla 7"><span class="pin-key-num mono">7</span></button>
+      <button type="button" class="pin-key pin-key-digit" data-digit="8" aria-label="Tecla 8"><span class="pin-key-num mono">8</span></button>
+      <button type="button" class="pin-key pin-key-digit" data-digit="9" aria-label="Tecla 9"><span class="pin-key-num mono">9</span></button>
+      <div class="pin-key pin-key-empty" aria-hidden="true"></div>
+      <button type="button" class="pin-key pin-key-digit" data-digit="0" aria-label="Tecla 0"><span class="pin-key-num mono">0</span></button>
+      <button type="button" class="pin-key pin-key-back" data-action="backspace" aria-label="Borrar último dígito">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 6h13a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-13L3 14z"/>
+          <path d="M12.5 11l6 6"/>
+          <path d="M18.5 11l-6 6"/>
+        </svg>
+      </button>
+    </section>
+
+    <footer class="login-foot">
+      <button type="button" class="link-button" data-action="forgot">¿Olvidaste tu PIN?</button>
+    </footer>
+
+  </div>
+</div>
+    </div>
+
+    <div id="view-dashboard" style="display: none;">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-dashboard en index.html.
+     Hooks JS sugeridos:
+       button[data-action=scan]   → abrir escáner (header)
+       button[data-view=...]      → bottom nav
+       button[data-action=reponer][data-sku=...] → abrir modal entrada
+       a[data-action=view-low]    → ir a Bajo stock
+       a[data-action=view-history]→ ir a historial
+     Datos dinámicos:
+       [data-metric=total]   → total productos
+       [data-metric=low]     → contador bajo stock
+       [data-metric=moves]   → movimientos del día
+       [data-low-stock-list] → lista de productos críticos
+       [data-moves-list]     → lista de movimientos
+     Valores numéricos mostrados son ejemplo — reemplazar al renderizar.
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="dash">
+
+    <header class="dash-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="brand-mark-bar"></span>
+          <span class="brand-mark-bar"></span>
+          <span class="brand-mark-bar"></span>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">INVENTARIO</div>
+          <div class="brand-sub">PERFORMANCE</div>
+        </div>
+      </div>
+      <button class="header-scan" type="button" data-action="scan" data-view="escaner" aria-label="Abrir escáner">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8V6a2 2 0 0 1 2-2h2"/>
+          <path d="M21 8V6a2 2 0 0 0-2-2h-2"/>
+          <path d="M3 16v2a2 2 0 0 0 2 2h2"/>
+          <path d="M21 16v2a2 2 0 0 1-2 2h-2"/>
+          <rect x="7" y="8" width="10" height="8" rx="1"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="greet">
+      <h1 class="greet-title" data-greet>Buen día</h1>
+      <p class="greet-sub mono" data-current-date>SAB · 17 MAY · 09:41</p>
+    </div>
+
+    <section class="metrics" aria-label="Resumen">
+      <article class="metric">
+        <div class="metric-label">Total productos</div>
+        <div class="metric-value-row">
+          <span class="metric-value" data-metric="total">0</span>
+        </div>
+        <div class="metric-delta">+12 esta semana</div>
+      </article>
+      <article class="metric">
+        <div class="metric-label">Bajo stock</div>
+        <div class="metric-value-row">
+          <span class="metric-value" data-metric="low">0</span>
+          <span class="badge-dot" data-metric="low-badge" aria-label="8 ítems">0</span>
+        </div>
+        <div class="metric-delta">Requiere acción</div>
+      </article>
+      <article class="metric">
+        <div class="metric-label">Movimientos hoy</div>
+        <div class="metric-value-row">
+          <span class="metric-value" data-metric="moves">0</span>
+        </div>
+        <div class="metric-delta">21 ent · 13 sal</div>
+      </article>
+    </section>
+
+    <section class="dash-quick" aria-label="Accesos rápidos">
+      <button class="dash-quick-btn" type="button" data-view="bajo-stock">
+        <span class="dash-quick-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5L21.5 20.5H2.5z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.5" r="0.5" fill="currentColor"/></svg>
+          <span class="dash-quick-badge mono" data-low-stock-count>0</span>
+        </span>
+        <span>Bajo stock</span>
+      </button>
+      <button class="dash-quick-btn" type="button" data-view="metricas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V5"/><path d="M16 16v-8"/><path d="M21 16v-4"/></svg>
+        <span>Métricas</span>
+      </button>
+    </section>
+
+    <section class="section">
+      <header class="section-head">
+        <div class="section-title-wrap">
+          <h2 class="section-title">Bajo stock urgente</h2>
+          <span class="section-count mono" data-low-stock-count>0</span>
+        </div>
+        <a class="section-link" href="#bajo-stock" data-view="bajo-stock">Ver todo</a>
+      </header>
+      <ul class="lowstock-list" data-low-stock-list></ul>
+    </section>
+
+    <section class="section">
+      <header class="section-head">
+        <div class="section-title-wrap">
+          <h2 class="section-title">Últimos movimientos</h2>
+          <span class="section-count mono">10</span>
+        </div>
+        <a class="section-link" href="#historial" data-action="view-history">Historial</a>
+      </header>
+      <ul class="moves-list" data-moves-list></ul>
+    </section>
+
+    <div class="dash-footer-spacer" aria-hidden="true"></div>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item active" type="button" aria-current="page">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></svg>
+        <span>Inicio</span>
+      </button>
+      <button class="nav-item" type="button" data-view="inventario">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+        <span>Inventario</span>
+      </button>
+      <button class="nav-item nav-fab" type="button" data-view="escaner" aria-label="Escáner">
+        <span class="nav-fab-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M21 7V5a2 2 0 0 0-2-2h-2"/><path d="M3 17v2a2 2 0 0 0 2 2h2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 12h10"/></svg>
+        </span>
+        <span>Escáner</span>
+      </button>
+      <button class="nav-item" type="button" data-view="ventas">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2.4 11.5a2 2 0 0 0 2 1.5h8.2a2 2 0 0 0 2-1.5L21 9H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17.5" cy="21" r="1"/></svg>
+        <span>Ventas</span>
+      </button>
+      <button class="nav-item" type="button" data-view="config">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Config</span>
+      </button>
+    </nav>
+
+  </div>
+
+      <div class="dk-only">
+        <section class="dk-metrics-grid">
+          <article class="dk-metric dk-metric-accent">
+            <div class="dk-metric-label">Total productos</div>
+            <div class="dk-metric-value-row"><span class="dk-metric-value" data-metric="total">0</span></div>
+          </article>
+          <article class="dk-metric">
+            <div class="dk-metric-label">Bajo stock</div>
+            <div class="dk-metric-value-row">
+              <span class="dk-metric-value" data-metric="low">0</span>
+              <span class="dk-metric-badge" data-metric="low-badge">0</span>
+            </div>
+          </article>
+          <article class="dk-metric">
+            <div class="dk-metric-label">Movimientos</div>
+            <div class="dk-metric-value-row"><span class="dk-metric-value" data-metric="moves">0</span></div>
+          </article>
+          <article class="dk-metric">
+            <div class="dk-metric-label">Ingresos del día</div>
+            <div class="dk-metric-value-row"><span class="dk-metric-value">—</span></div>
+          </article>
+        </section>
+        <section class="dk-grid-2-1">
+          <article class="dk-card">
+            <header class="dk-card-head">
+              <h2 class="dk-card-title">Bajo stock urgente <span class="dk-card-count" data-low-stock-count>0</span></h2>
+              <a class="dk-card-link" data-view="bajo-stock">Ver todo →</a>
+            </header>
+            <table class="dk-table dk-table-inv">
+              <thead><tr><th>Producto</th><th>SKU</th><th class="num">Stock</th><th class="num">Mín</th><th class="right">Acción</th></tr></thead>
+              <tbody data-low-stock-list></tbody>
+            </table>
+          </article>
+          <article class="dk-card">
+            <header class="dk-card-head">
+              <h2 class="dk-card-title">Últimos movimientos</h2>
+              <a class="dk-card-link" data-view="bajo-stock">Historial</a>
+            </header>
+            <ul class="dk-moves-list" data-moves-list></ul>
+          </article>
+        </section>
+      </div>
+
+</div>
+
+
+    </div>
+    <div id="view-inventario" style="display: none;">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-inventario en index.html.
+     Hooks JS sugeridos:
+       a[data-action=back] / button[data-action=sort]
+       input[data-action=search] → barra de búsqueda
+       button[data-action=clear-search]
+       button[data-cat=...]      → chips de categoría
+       button[data-product-sku=...] → fila del producto (lleva a detalle)
+       button[data-action=new-product] → FAB
+       button[data-action=nudge-left|nudge-right] → flechas chips
+     Datos dinámicos:
+       [data-product-list]       → lista de productos filtrados
+       [data-product-count]      → contador resumen
+       [data-chip-count=cat]     → contador por chip
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="inv-root" data-density="comfortable">
+
+    <header class="inv-header">
+      <a class="icon-btn" data-action="back" data-view="dashboard" aria-label="Volver">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </a>
+      <h1 class="inv-title">Inventario</h1>
+      <button class="icon-btn" type="button" data-action="sort" aria-label="Ordenar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h14"/><path d="M8 12h10"/><path d="M10 18h6"/></svg>
+      </button>
+    </header>
+
+    <div class="inv-search-wrap">
+      <div class="inv-search">
+        <span class="inv-search-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/></svg>
+        </span>
+        <input
+          class="inv-search-input"
+          data-action="search"
+          type="search"
+          inputmode="search"
+          autocomplete="off"
+          placeholder="Buscar producto, marca o SKU"
+        />
+        <!-- Mostrar/ocultar este botón cuando hay query -->
+        <button class="inv-search-clear" type="button" data-action="clear-search" aria-label="Limpiar búsqueda" hidden>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="inv-chips-wrap fade-right" data-chips-wrap>
+      <div class="inv-chips" data-chips role="tablist" aria-label="Filtrar por categoría">
+        <button type="button" role="tab" aria-selected="true" class="inv-chip active" data-cat="Todos">
+          <span>Todos</span><span class="inv-chip-count mono" data-chip-count="Todos">0</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="inv-chip" data-cat="Cables">
+          <span>Cables</span><span class="inv-chip-count mono" data-chip-count="Cables">0</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="inv-chip" data-cat="Cámaras">
+          <span>Cámaras</span><span class="inv-chip-count mono" data-chip-count="Cámaras">0</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="inv-chip" data-cat="Cubiertas">
+          <span>Cubiertas</span><span class="inv-chip-count mono" data-chip-count="Cubiertas">0</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="inv-chip" data-cat="Frenos">
+          <span>Frenos</span><span class="inv-chip-count mono" data-chip-count="Frenos">0</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="inv-chip" data-cat="Cadenas">
+          <span>Cadenas</span><span class="inv-chip-count mono" data-chip-count="Cadenas">0</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="inv-chip" data-cat="Accesorios">
+          <span>Accesorios</span><span class="inv-chip-count mono" data-chip-count="Accesorios">0</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="inv-chip" data-cat="Herramientas">
+          <span>Herramientas</span><span class="inv-chip-count mono" data-chip-count="Herramientas">0</span>
+        </button>
+      </div>
+      <button class="inv-chips-nudge inv-chips-nudge-left" type="button" data-action="nudge-left" tabindex="-1" aria-label="Categorías anteriores">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>
+      </button>
+      <button class="inv-chips-nudge inv-chips-nudge-right" type="button" data-action="nudge-right" tabindex="-1" aria-label="Más categorías">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
+      </button>
+    </div>
+
+    <div class="inv-summary">
+      <span class="inv-summary-count mono">
+        <span data-product-count>0</span>
+        <span class="inv-summary-label">productos</span>
+      </span>
+      <span class="inv-summary-sort">Ordenar: A–Z</span>
+    </div>
+
+    <!-- Lista: el JS rellena <ul class="inv-list"> con filas según query/categoría.
+         Si no hay resultados, mostrar <div class="inv-empty">…</div>.
+         Template de fila más abajo. -->
+    <ul class="inv-list" data-product-list></ul>
+
+    <!-- Estado vacío: mostrar dentro del lugar de la lista cuando no hay resultados.
+      <div class="inv-empty">
+        <div class="inv-empty-title">Sin resultados</div>
+        <div class="inv-empty-sub">Probá con otro término o cambiá el filtro de categoría.</div>
+      </div>
+    -->
+
+    <div class="inv-bottom-spacer" aria-hidden="true"></div>
+
+    <button class="inv-fab" type="button" data-action="nuevo-producto" aria-label="Crear nuevo producto">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item" type="button" data-view="dashboard">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></svg>
+        <span>Inicio</span>
+      </button>
+      <button class="nav-item active" type="button" aria-current="page">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+        <span>Inventario</span>
+      </button>
+      <button class="nav-item nav-fab" type="button" data-view="escaner" aria-label="Escáner">
+        <span class="nav-fab-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M21 7V5a2 2 0 0 0-2-2h-2"/><path d="M3 17v2a2 2 0 0 0 2 2h2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 12h10"/></svg>
+        </span>
+        <span>Escáner</span>
+      </button>
+      <button class="nav-item" type="button" data-view="ventas">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2.4 11.5a2 2 0 0 0 2 1.5h8.2a2 2 0 0 0 2-1.5L21 9H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17.5" cy="21" r="1"/></svg>
+        <span>Ventas</span>
+      </button>
+      <button class="nav-item" type="button" data-view="config">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Config</span>
+      </button>
+    </nav>
+
+  </div>
+</div>
+
+      <div class="dk-only">
+        <div class="dk-inv-chips">
+          <button class="dk-inv-chip active" type="button" data-cat="Todos">
+            <span>Todos</span><span class="dk-inv-chip-count" data-chip-count="Todos">0</span>
+          </button>
+          <button class="dk-inv-chip" type="button" data-cat="Cables">
+            <span>Cables</span><span class="dk-inv-chip-count" data-chip-count="Cables">0</span>
+          </button>
+          <button class="dk-inv-chip" type="button" data-cat="Cámaras">
+            <span>Cámaras</span><span class="dk-inv-chip-count" data-chip-count="Cámaras">0</span>
+          </button>
+          <button class="dk-inv-chip" type="button" data-cat="Cubiertas">
+            <span>Cubiertas</span><span class="dk-inv-chip-count" data-chip-count="Cubiertas">0</span>
+          </button>
+          <button class="dk-inv-chip" type="button" data-cat="Frenos">
+            <span>Frenos</span><span class="dk-inv-chip-count" data-chip-count="Frenos">0</span>
+          </button>
+          <button class="dk-inv-chip" type="button" data-cat="Cadenas">
+            <span>Cadenas</span><span class="dk-inv-chip-count" data-chip-count="Cadenas">0</span>
+          </button>
+          <button class="dk-inv-chip" type="button" data-cat="Accesorios">
+            <span>Accesorios</span><span class="dk-inv-chip-count" data-chip-count="Accesorios">0</span>
+          </button>
+          <button class="dk-inv-chip" type="button" data-cat="Herramientas">
+            <span>Herramientas</span><span class="dk-inv-chip-count" data-chip-count="Herramientas">0</span>
+          </button>
+        </div>
+        <article class="dk-card dk-card-flush">
+          <table class="dk-table dk-table-inv">
+            <thead><tr>
+              <th>Producto</th><th>SKU</th><th>Marca</th><th>Categoría</th>
+              <th class="num">Stock</th><th class="num">Mín</th><th class="right">Acción</th>
+            </tr></thead>
+            <tbody data-product-list></tbody>
+          </table>
+        </article>
+      </div>
+
+    </div>
+
+    <div id="view-detalle" style="display: none;">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-detalle en index.html.
+     Hooks JS sugeridos:
+       a[data-action=back] / button[data-action=more]
+       button[data-action=add]   → abrir modal Agregar
+       button[data-action=rem]   → abrir modal Retirar
+       button[data-action=edit]  → editar producto
+     Datos del producto a inyectar:
+       [data-product-name]
+       [data-product-brand]
+       [data-product-category]
+       [data-product-sku]
+       [data-stock-current], [data-stock-min], [data-stock-max]
+       [data-data-cell=...] (SKU, unidad, costo, venta, margen, ubicación)
+       [data-history-list]
+     Severity en .stock-card: cambiar sev-ok|sev-warn|sev-crit
+       y .stock-card-tag: tag-ok|tag-warn|tag-crit
+       .stock-meter-fill: fill-ok|fill-warn|fill-crit
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="det-root">
+
+    <header class="det-header">
+      <a class="icon-btn" data-action="back" data-view="inventario" aria-label="Volver">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </a>
+      <span class="det-header-sku mono" data-product-sku>—</span>
+      <button class="icon-btn" type="button" data-action="more" aria-label="Más opciones">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="19" cy="12" r="1.4" fill="currentColor"/></svg>
+      </button>
+    </header>
+
+    <section class="det-hero">
+      <div class="det-eyebrow mono" data-product-category>—</div>
+      <h1 class="det-name" data-product-name>—</h1>
+      <div class="det-brand" data-product-brand>—</div>
+    </section>
+
+    <section class="stock-card sev-ok" data-stock-card>
+      <div class="stock-card-bar" aria-hidden="true"></div>
+      <div class="stock-card-inner">
+        <div class="stock-card-left">
+          <span class="stock-card-num mono" data-stock-current>—</span>
+          <span class="stock-card-unit">unidades en stock</span>
+        </div>
+        <div class="stock-card-right">
+          <div class="stock-card-tag tag-ok" data-stock-tag>—</div>
+          <div class="stock-meter" aria-hidden="true">
+            <div class="stock-meter-track"></div>
+            <div class="stock-meter-fill fill-ok" data-stock-fill style="width: 58%;"></div>
+            <div class="stock-meter-mark" data-stock-mark style="left: 33%;" title="Mínimo: 8"></div>
+          </div>
+          <div class="stock-meter-legend mono">
+            <span>0</span>
+            <span>mín <span data-stock-min>—</span></span>
+            <span>máx <span data-stock-max>—</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="data-grid">
+      <div class="data-cell">
+        <div class="data-label">SKU</div>
+        <div class="data-value"><span class="mono" data-data-cell="sku">—</span></div>
+      </div>
+      <div class="data-cell">
+        <div class="data-label">Unidad</div>
+        <div class="data-value" data-data-cell="unit">—</div>
+      </div>
+      <div class="data-cell">
+        <div class="data-label">Precio costo</div>
+        <div class="data-value"><span class="mono" data-data-cell="cost">—</span></div>
+      </div>
+      <div class="data-cell">
+        <div class="data-label">Precio venta</div>
+        <div class="data-value"><span class="mono" data-data-cell="price">—</span></div>
+      </div>
+      <div class="data-cell">
+        <div class="data-label">Margen</div>
+        <div class="data-value">
+          <span class="mono" data-data-cell="margin">52% <span class="data-sub">· $ 23.700</span></span>
+        </div>
+      </div>
+      <div class="data-cell">
+        <div class="data-label">Ubicación</div>
+        <div class="data-value">
+          <span class="data-loc">
+            <span class="data-loc-icon">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1.5a3.5 3.5 0 0 0-3.5 3.5c0 3 3.5 6.5 3.5 6.5s3.5-3.5 3.5-6.5A3.5 3.5 0 0 0 7 1.5z"/><circle cx="7" cy="5" r="1.2"/></svg>
+            </span>
+            <span data-data-cell="location">—</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="det-section">
+      <header class="det-section-head">
+        <h2 class="det-section-title">Historial</h2>
+        <span class="det-section-count mono" data-history-count>0</span>
+      </header>
+      <div class="hist-groups" data-history-list></div>
+    </section>
+
+    <div class="det-bottom-spacer" aria-hidden="true"></div>
+
+    <div class="action-dock">
+      <button class="act act-add" type="button" data-action="add">
+        <span class="act-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        <span>Agregar</span>
+      </button>
+      <button class="act act-rem" type="button" data-action="rem">
+        <span class="act-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+        </span>
+        <span>Retirar</span>
+      </button>
+      <button class="act act-edit" type="button" data-action="edit">
+        <span class="act-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 5.3l4 4L9 19l-5 1 1-5z"/><path d="M13.3 6.7l4 4"/></svg>
+        </span>
+        <span>Editar</span>
+      </button>
+    </div>
+
+  </div>
+
+      <div class="dk-only">
+        <div class="dk-det-grid">
+          <div class="dk-det-left">
+            <article class="stock-card" data-stock-card>
+              <div class="stock-card-bar" aria-hidden="true"></div>
+              <div class="stock-card-inner">
+                <div class="stock-card-left">
+                  <span class="stock-card-num mono" data-stock-current>—</span>
+                  <span class="stock-card-unit">unidades en stock</span>
+                </div>
+                <div class="stock-card-right">
+                  <div class="stock-card-tag" data-stock-tag>—</div>
+                  <div class="stock-meter" aria-hidden="true">
+                    <div class="stock-meter-track"></div>
+                    <div class="stock-meter-fill" data-stock-fill style="width:0%"></div>
+                    <div class="stock-meter-mark" data-stock-mark style="left:0%"></div>
+                  </div>
+                  <div class="stock-meter-legend mono">
+                    <span>0</span>
+                    <span>mín <span data-stock-min>—</span></span>
+                    <span>máx <span data-stock-max>—</span></span>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <div class="dk-det-actions">
+              <button class="dk-btn dk-btn-primary" type="button" data-action="add">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                <span>Agregar stock</span>
+              </button>
+              <button class="dk-btn dk-btn-default" type="button" data-action="rem">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                <span>Retirar stock</span>
+              </button>
+              <button class="dk-btn dk-btn-default" type="button" data-action="edit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 5.3l4 4L9 19l-5 1 1-5z"/><path d="M13.3 6.7l4 4"/></svg>
+                <span>Editar</span>
+              </button>
+            </div>
+
+            <section class="data-grid">
+              <div class="data-cell"><div class="data-label">SKU</div><div class="data-value"><span class="mono" data-data-cell="sku">—</span></div></div>
+              <div class="data-cell"><div class="data-label">Unidad</div><div class="data-value" data-data-cell="unit">—</div></div>
+              <div class="data-cell"><div class="data-label">Precio costo</div><div class="data-value"><span class="mono" data-data-cell="cost">—</span></div></div>
+              <div class="data-cell"><div class="data-label">Precio venta</div><div class="data-value"><span class="mono" data-data-cell="price">—</span></div></div>
+              <div class="data-cell"><div class="data-label">Margen</div><div class="data-value"><span class="mono" data-data-cell="margin">—</span></div></div>
+              <div class="data-cell"><div class="data-label">Ubicación</div><div class="data-value"><span data-data-cell="location">—</span></div></div>
+            </section>
+          </div>
+          <aside class="dk-det-right">
+            <article class="dk-card">
+              <header class="dk-card-head">
+                <h2 class="dk-card-title">Historial <span class="dk-card-count" data-history-count>0</span></h2>
+              </header>
+              <div class="dk-hist-groups" data-history-list></div>
+            </article>
+          </aside>
+        </div>
+      </div>
+
+</div>
+
+
+    </div>
+    <div id="view-escaner" style="display: none;">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-escaner en index.html.
+     Hooks JS sugeridos:
+       a[data-action=back]       → volver atrás
+       button[data-action=flash] → toggle linterna
+       button[data-action=manual]→ input manual de SKU
+       button[data-view=...]     → bottom nav
+     Estados (cambiar data-state en .sn-viewfinder):
+       data-state="idle"      → scanline animada + corners verdes
+       data-state="detected"  → corners blancos, banner verde
+       data-state="online"    → spinner naranja, banner online
+     Para mostrar banner: insertar .sn-status apropiada antes del viewfinder.
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="sn-root">
+
+    <header class="sn-header">
+      <a class="icon-btn sn-icon-btn" data-action="back" data-view="dashboard" aria-label="Volver">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </a>
+      <h1 class="sn-title">Escáner</h1>
+      <button class="icon-btn sn-icon-btn" type="button" data-action="flash" aria-label="Linterna">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L4 14h7l-1 7 9-11h-7z"/></svg>
+      </button>
+    </header>
+
+    <!--
+      Banner flotante de estado.
+      Insertar dinámicamente cuando scanState !== 'idle':
+
+      <div class="sn-status sn-status-detected">
+        <div class="sn-status-icon"><span class="sn-status-dot sn-status-dot-pulse"></span></div>
+        <div class="sn-status-body">
+          <div class="sn-status-title">Código detectado</div>
+          <div class="sn-status-sub">Buscando en base de datos…</div>
+        </div>
+      </div>
+
+      <div class="sn-status sn-status-online">
+        <div class="sn-status-icon"><span class="sn-spinner"></span></div>
+        <div class="sn-status-body">
+          <div class="sn-status-title">No está en tu inventario</div>
+          <div class="sn-status-sub">Consultando catálogo en línea…</div>
+        </div>
+      </div>
+    -->
+
+    <div class="sn-viewfinder" data-state="idle" data-scan-viewfinder>
+      <div class="sn-cam" aria-hidden="true">
+        <div class="sn-cam-bars">
+          <span class="sn-cam-bar sn-cam-bar-0"></span>
+          <span class="sn-cam-bar sn-cam-bar-1"></span>
+          <span class="sn-cam-bar sn-cam-bar-2"></span>
+          <span class="sn-cam-bar sn-cam-bar-3"></span>
+          <span class="sn-cam-bar sn-cam-bar-4"></span>
+          <span class="sn-cam-bar sn-cam-bar-5"></span>
+          <span class="sn-cam-bar sn-cam-bar-6"></span>
+          <span class="sn-cam-bar sn-cam-bar-7"></span>
+          <span class="sn-cam-bar sn-cam-bar-8"></span>
+        </div>
+      </div>
+
+      <div class="sn-scrim" aria-hidden="true">
+        <div class="sn-scrim-top"></div>
+        <div class="sn-scrim-mid">
+          <div class="sn-scrim-side"></div>
+          <div class="sn-window">
+            <div class="sn-corner sn-corner-tl"><span></span><span></span></div>
+            <div class="sn-corner sn-corner-tr"><span></span><span></span></div>
+            <div class="sn-corner sn-corner-bl"><span></span><span></span></div>
+            <div class="sn-corner sn-corner-br"><span></span><span></span></div>
+            <!--
+              Cuando html5-qrcode esté activo, este contenedor
+              alojará el <video>. Por ahora muestra un mock de barcode.
+            -->
+            <div id="scanner-container" data-scan-video-container></div>
+            <div class="sn-scanline"></div>
+          </div>
+          <div class="sn-scrim-side"></div>
+        </div>
+        <div class="sn-scrim-bottom"></div>
+      </div>
+    </div>
+
+    <div class="sn-instruct" data-scan-instruct>
+      Apuntá al código de barras del producto
+    </div>
+
+    <div class="sn-secondary">
+      <button class="sn-manual" type="button" data-action="manual">
+        <span class="sn-manual-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="13" rx="2"/>
+            <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9 14h6"/>
+          </svg>
+        </span>
+        <span>Ingresar código manualmente</span>
+      </button>
+    </div>
+
+    <div class="sn-spacer"></div>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item" type="button" data-view="dashboard">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></svg>
+        <span>Inicio</span>
+      </button>
+      <button class="nav-item" type="button" data-view="inventario">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+        <span>Inventario</span>
+      </button>
+      <button class="nav-item nav-fab active" type="button" aria-current="page" aria-label="Escáner">
+        <span class="nav-fab-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M21 7V5a2 2 0 0 0-2-2h-2"/><path d="M3 17v2a2 2 0 0 0 2 2h2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 12h10"/></svg>
+        </span>
+        <span>Escáner</span>
+      </button>
+      <button class="nav-item" type="button" data-view="ventas">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2.4 11.5a2 2 0 0 0 2 1.5h8.2a2 2 0 0 0 2-1.5L21 9H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17.5" cy="21" r="1"/></svg>
+        <span>Ventas</span>
+      </button>
+      <button class="nav-item" type="button" data-view="config">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Config</span>
+      </button>
+    </nav>
+
+  </div>
+</div>
+    </div>
+
+    <div id="view-bajo-stock" style="display: none;">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-bajo-stock en index.html.
+     Hooks JS sugeridos:
+       a[data-action=back] / button[data-action=filter]
+       button[data-action=reponer][data-sku=...]
+       button[data-view=...] → bottom nav
+     Datos dinámicos:
+       [data-low-count] → total productos en alerta
+       [data-summary-crit] / [data-summary-warn]
+       [data-section-crit] [data-section-warn] → contenedores de listas
+       Si total = 0, reemplazar todo el contenido (excepto header y nav) por .ls-empty
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="ls-root">
+
+    <header class="ls-header">
+      <a class="icon-btn sn-icon-btn" data-action="back" data-view="dashboard" aria-label="Volver">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </a>
+      <h1 class="ls-title">
+        Bajo stock
+        <span class="ls-title-badge mono" data-low-count>0</span>
+      </h1>
+      <button class="icon-btn sn-icon-btn" type="button" data-action="filter" aria-label="Filtrar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      </button>
+    </header>
+
+    <!-- Vista por defecto: con alertas.
+         Estado vacío (todo OK): reemplazar todo el bloque .ls-summary + secciones por:
+        <div class="ls-empty">
+          <div class="ls-empty-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12l5 5L20 6"/>
+            </svg>
+          </div>
+          <div class="ls-empty-title">Todo el stock está en orden</div>
+          <div class="ls-empty-sub">No hay productos por debajo del mínimo.</div>
+        </div>
+    -->
+
+    <section class="ls-summary">
+      <article class="ls-sum ls-sum-crit">
+        <div class="ls-sum-num mono" data-summary-crit>0</div>
+        <div class="ls-sum-info">
+          <div class="ls-sum-label">Críticos</div>
+          <div class="ls-sum-sub">Sin stock</div>
+        </div>
+      </article>
+      <article class="ls-sum ls-sum-warn">
+        <div class="ls-sum-num mono" data-summary-warn>0</div>
+        <div class="ls-sum-info">
+          <div class="ls-sum-label">Bajos</div>
+          <div class="ls-sum-sub">≤ mínimo</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="ls-section">
+      <header class="ls-section-head">
+        <span class="ls-section-dot ls-section-dot-crit" aria-hidden="true"></span>
+        <h2 class="ls-section-title">Críticos</h2>
+        <span class="ls-section-count mono ls-section-count-crit" data-summary-crit>0</span>
+      </header>
+      <ul class="ls-list" data-section-crit></ul>
+    </section>
+
+    <section class="ls-section">
+      <header class="ls-section-head">
+        <span class="ls-section-dot ls-section-dot-warn" aria-hidden="true"></span>
+        <h2 class="ls-section-title">Bajos</h2>
+        <span class="ls-section-count mono ls-section-count-warn" data-summary-warn>0</span>
+      </header>
+      <ul class="ls-list" data-section-warn></ul>
+    </section>
+
+    <div class="ls-spacer"></div>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item" type="button" data-view="dashboard">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></svg>
+        <span>Inicio</span>
+      </button>
+      <button class="nav-item" type="button" data-view="inventario">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+        <span>Inventario</span>
+      </button>
+      <button class="nav-item nav-fab" type="button" data-view="escaner" aria-label="Escáner">
+        <span class="nav-fab-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M21 7V5a2 2 0 0 0-2-2h-2"/><path d="M3 17v2a2 2 0 0 0 2 2h2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 12h10"/></svg>
+        </span>
+        <span>Escáner</span>
+      </button>
+      <button class="nav-item" type="button" data-view="ventas">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2.4 11.5a2 2 0 0 0 2 1.5h8.2a2 2 0 0 0 2-1.5L21 9H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17.5" cy="21" r="1"/></svg>
+        <span>Ventas</span>
+      </button>
+      <button class="nav-item" type="button" data-view="config">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Config</span>
+      </button>
+    </nav>
+
+  </div>
+
+      <div class="dk-only">
+        <section class="dk-ls-summary">
+          <article class="dk-ls-sum dk-ls-sum-crit">
+            <div class="dk-ls-sum-head">
+              <span class="dk-ls-sum-dot" aria-hidden="true"></span>
+              <div class="dk-ls-sum-label">Crítico</div>
+            </div>
+            <div class="dk-ls-sum-num" data-summary-crit>0</div>
+            <div class="dk-ls-sum-sub">Sin stock</div>
+          </article>
+          <article class="dk-ls-sum dk-ls-sum-warn">
+            <div class="dk-ls-sum-head">
+              <span class="dk-ls-sum-dot" aria-hidden="true"></span>
+              <div class="dk-ls-sum-label">Advertencia</div>
+            </div>
+            <div class="dk-ls-sum-num" data-summary-warn>0</div>
+            <div class="dk-ls-sum-sub">Por debajo del mínimo</div>
+          </article>
+          <article class="dk-ls-sum dk-ls-sum-info">
+            <div class="dk-ls-sum-head">
+              <span class="dk-ls-sum-dot" aria-hidden="true"></span>
+              <div class="dk-ls-sum-label">Total alertas</div>
+            </div>
+            <div class="dk-ls-sum-num" data-low-count>0</div>
+            <div class="dk-ls-sum-sub">Productos en alerta</div>
+          </article>
+        </section>
+        <article class="dk-card dk-card-flush">
+          <header class="dk-card-head">
+            <h2 class="dk-card-title">Críticos</h2>
+          </header>
+          <table class="dk-table">
+            <thead><tr><th>Producto</th><th>SKU</th><th>Marca</th><th class="num">Stock</th><th class="num">Mín</th><th class="right">Acción</th></tr></thead>
+            <tbody data-section-crit></tbody>
+          </table>
+        </article>
+        <article class="dk-card dk-card-flush">
+          <header class="dk-card-head">
+            <h2 class="dk-card-title">Advertencia</h2>
+          </header>
+          <table class="dk-table">
+            <thead><tr><th>Producto</th><th>SKU</th><th>Marca</th><th class="num">Stock</th><th class="num">Mín</th><th class="right">Acción</th></tr></thead>
+            <tbody data-section-warn></tbody>
+          </table>
+        </article>
+      </div>
+
+</div>
+
+
+    </div>
+    <div id="view-config" style="display: none;">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-config en index.html.
+     Hooks JS sugeridos:
+       a[data-action=back]
+       button[data-setting=change-pin]
+       button[data-setting=export-csv]
+       button[data-action=logout]
+       button[data-segmented=autolock] / [data-segmented=cooldown]
+       input[data-setting=shop-name]
+       input[data-setting=address]
+       input[data-setting=bot-phone]
+     Estado:
+       [data-setting-value=…] → valores actuales
+       [data-bot-status] → 'on' o 'off' en el badge
+       [data-last-sync]  → texto "hace X minutos"
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="cfg-root">
+
+    <header class="cfg-header">
+      <a class="icon-btn sn-icon-btn" data-action="back" data-view="dashboard" aria-label="Volver">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </a>
+      <h1 class="cfg-title">Configuración</h1>
+      <div style="width: 44px;" aria-hidden="true"></div>
+    </header>
+
+    <main class="cfg-body">
+
+      <!-- ── 1. Perfil & acceso ── -->
+      <section class="cfg-section">
+        <div class="cfg-section-label">Perfil &amp; acceso</div>
+        <div class="cfg-group">
+          <button type="button" class="cfg-row cfg-row-clickable" data-setting="change-pin">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Cambiar PIN</div>
+              <div class="cfg-row-hint">Cuatro dígitos numéricos</div>
+            </div>
+            <div class="cfg-row-right">
+              <span class="cfg-row-chev" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
+              </span>
+            </div>
+          </button>
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Auto-lock</div>
+            </div>
+            <div class="cfg-row-right">
+              <div class="cfg-seg" data-segmented="autolock">
+                <button type="button" class="cfg-seg-btn" data-value="5"><span class="mono">5 min</span></button>
+                <button type="button" class="cfg-seg-btn active" data-value="10"><span class="mono">10 min</span></button>
+                <button type="button" class="cfg-seg-btn" data-value="30"><span class="mono">30 min</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 2. Sucursal ── -->
+      <section class="cfg-section">
+        <div class="cfg-section-label">Sucursal</div>
+        <div class="cfg-group">
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16l-1.5 11a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7L4 8z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Nombre del negocio</div>
+            </div>
+            <div class="cfg-row-right">
+              <input class="cfg-input" type="text" data-setting="shop-name" value="GRIFASI PERFORMANCE" />
+            </div>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a7 7 0 0 0-7 7c0 5 7 11 7 11s7-6 7-11a7 7 0 0 0-7-7z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Dirección</div>
+            </div>
+            <div class="cfg-row-right">
+              <input class="cfg-input" type="text" data-setting="address" placeholder="Calle, número, ciudad" value="" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 3. Bot WhatsApp ── -->
+      <section class="cfg-section">
+        <div class="cfg-section-label">Bot de WhatsApp</div>
+        <div class="cfg-group">
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h4l2 5-2.5 1.5a11 11 0 0 0 4 4L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 2-2z"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Número para alertas</div>
+            </div>
+            <div class="cfg-row-right">
+              <input class="cfg-input mono" type="tel" inputmode="tel" data-setting="bot-phone" placeholder="+54 9 11 …" value="" />
+            </div>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10"/><path d="M7 21h10"/><path d="M7 3v3l5 6-5 6v3"/><path d="M17 3v3l-5 6 5 6v3"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Cooldown de alertas</div>
+            </div>
+            <div class="cfg-row-right">
+              <div class="cfg-seg" data-segmented="cooldown">
+                <button type="button" class="cfg-seg-btn" data-value="1"><span class="mono">1h</span></button>
+                <button type="button" class="cfg-seg-btn active" data-value="6"><span class="mono">6h</span></button>
+                <button type="button" class="cfg-seg-btn" data-value="12"><span class="mono">12h</span></button>
+                <button type="button" class="cfg-seg-btn" data-value="24"><span class="mono">24h</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-13.6 7.7L3 21l1.4-4.3A9 9 0 1 1 21 12z"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Estado del bot</div>
+            </div>
+            <div class="cfg-row-right">
+              <span class="cfg-status cfg-status-on" data-bot-status>
+                <span class="cfg-status-dot"></span>
+                <span>Activo</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="cfg-section-footer">
+          El bot envía alertas cuando un producto cruza el mínimo. El cooldown evita repetir avisos del mismo SKU.
+        </div>
+      </section>
+
+      <!-- ── 4. Datos & sincronización ── -->
+      <section class="cfg-section">
+        <div class="cfg-section-label">Datos &amp; sincronización</div>
+        <div class="cfg-group">
+          <button type="button" class="cfg-row cfg-row-clickable" data-setting="export-csv">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M6 12l6 6 6-6"/><path d="M4 20h16"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Exportar inventario</div>
+              <div class="cfg-row-hint">CSV · todos los productos y stock actual</div>
+            </div>
+            <div class="cfg-row-right">
+              <span class="cfg-action-link">Descargar →</span>
+            </div>
+          </button>
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 4v4h-4"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 20v-4h4"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Última sincronización</div>
+            </div>
+            <div class="cfg-row-right">
+              <span class="cfg-row-value" data-last-sync>hace 3 minutos</span>
+            </div>
+          </div>
+        </div>
+        <div class="cfg-section-footer">
+          Próxima sync programada: <span data-next-sync>hoy 18:00</span>
+        </div>
+      </section>
+
+      <!-- ── 5. Contacto & Redes ── -->
+      <section class="cfg-section">
+        <div class="cfg-section-label">Contacto &amp; Redes</div>
+        <div class="cfg-group">
+          <div class="cfg-row cfg-row-credit">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h4l2 5-2.5 1.5a11 11 0 0 0 4 4L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 2-2z"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">WhatsApp</div>
+              <div class="cfg-row-hint">+54 9 387 488-7699</div>
+            </div>
+            <div class="cfg-row-right">
+              <a class="cfg-credit-btn" href="https://wa.me/5493874887699" target="_blank" rel="noopener" aria-label="Abrir WhatsApp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="cfg-row cfg-row-credit">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Instagram</div>
+              <div class="cfg-row-hint">@hookia.co</div>
+            </div>
+            <div class="cfg-row-right">
+              <a class="cfg-credit-btn" href="https://www.instagram.com/hookia.co/" target="_blank" rel="noopener" aria-label="Abrir Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="cfg-row cfg-row-credit">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 3 4 5.7 4 9s-1.5 6-4 9c-2.5-3-4-5.7-4-9s1.5-6 4-9z"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Sitio web</div>
+              <div class="cfg-row-hint">hookia.online</div>
+            </div>
+            <div class="cfg-row-right">
+              <a class="cfg-credit-btn" href="https://hookia.online/" target="_blank" rel="noopener" aria-label="Abrir sitio web">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 6. Acerca de ── -->
+      <section class="cfg-section">
+        <div class="cfg-section-label">Acerca de</div>
+        <div class="cfg-group">
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Versión de la app</div>
+            </div>
+            <div class="cfg-row-right">
+              <span class="cfg-row-value"><span class="mono" data-app-version>v1.0.0</span></span>
+            </div>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-row-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            </span>
+            <div class="cfg-row-body">
+              <div class="cfg-row-label">Desarrollado por</div>
+              <div class="cfg-row-hint">Hookia · diseño &amp; desarrollo</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="cfg-logout-wrap">
+        <button class="cfg-logout" type="button" data-action="logout">
+          <span class="cfg-logout-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17l5-5-5-5"/><path d="M19 12H9"/><path d="M11 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5"/></svg>
+          </span>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+
+    </main>
+
+    <div class="cfg-spacer"></div>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item" type="button" data-view="dashboard">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></svg>
+        <span>Inicio</span>
+      </button>
+      <button class="nav-item" type="button" data-view="inventario">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+        <span>Inventario</span>
+      </button>
+      <button class="nav-item nav-fab" type="button" data-view="escaner" aria-label="Escáner">
+        <span class="nav-fab-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M21 7V5a2 2 0 0 0-2-2h-2"/><path d="M3 17v2a2 2 0 0 0 2 2h2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 12h10"/></svg>
+        </span>
+        <span>Escáner</span>
+      </button>
+      <button class="nav-item" type="button" data-view="ventas">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2.4 11.5a2 2 0 0 0 2 1.5h8.2a2 2 0 0 0 2-1.5L21 9H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17.5" cy="21" r="1"/></svg>
+        <span>Ventas</span>
+      </button>
+      <button class="nav-item active" type="button" aria-current="page">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Config</span>
+      </button>
+    </nav>
+
+  </div>
+</div>
+
+      <div class="dk-only">
+        <div class="dk-cfg-grid">
+          <main class="dk-cfg-main">
+            <article class="dk-card">
+              <header class="dk-card-head"><h2 class="dk-card-title">Negocio</h2></header>
+              <div class="cfg-row">
+                <div class="cfg-row-body"><div class="cfg-row-label">Nombre del negocio</div></div>
+                <div class="cfg-row-right"><input class="cfg-input" type="text" data-setting="shop-name" /></div>
+              </div>
+              <div class="cfg-row">
+                <div class="cfg-row-body"><div class="cfg-row-label">Dirección</div></div>
+                <div class="cfg-row-right"><input class="cfg-input" type="text" data-setting="address" placeholder="Calle, número, ciudad" /></div>
+              </div>
+            </article>
+            <article class="dk-card">
+              <header class="dk-card-head"><h2 class="dk-card-title">Bot de WhatsApp</h2></header>
+              <div class="cfg-row">
+                <div class="cfg-row-body"><div class="cfg-row-label">Número para alertas</div></div>
+                <div class="cfg-row-right"><input class="cfg-input mono" type="tel" inputmode="tel" data-setting="bot-phone" placeholder="+54 9 11 …" /></div>
+              </div>
+              <div class="cfg-row">
+                <div class="cfg-row-body"><div class="cfg-row-label">Cooldown de alertas</div></div>
+                <div class="cfg-row-right">
+                  <div class="cfg-seg" data-segmented="cooldown">
+                    <button type="button" class="cfg-seg-btn" data-value="1"><span class="mono">1h</span></button>
+                    <button type="button" class="cfg-seg-btn" data-value="6"><span class="mono">6h</span></button>
+                    <button type="button" class="cfg-seg-btn" data-value="12"><span class="mono">12h</span></button>
+                    <button type="button" class="cfg-seg-btn" data-value="24"><span class="mono">24h</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="cfg-row">
+                <div class="cfg-row-body"><div class="cfg-row-label">Estado del bot</div></div>
+                <div class="cfg-row-right">
+                  <span class="cfg-status cfg-status-off" data-bot-status>
+                    <span class="cfg-status-dot"></span><span>—</span>
+                  </span>
+                </div>
+              </div>
+            </article>
+            <article class="dk-card">
+              <header class="dk-card-head"><h2 class="dk-card-title">Acciones</h2></header>
+              <div class="cfg-row">
+                <div class="cfg-row-body"><div class="cfg-row-label">Cambiar PIN</div><div class="cfg-row-hint">Cuatro dígitos numéricos</div></div>
+                <div class="cfg-row-right"><button class="dk-btn dk-btn-default" type="button" data-setting="change-pin">Cambiar</button></div>
+              </div>
+              <div class="cfg-row">
+                <div class="cfg-row-body"><div class="cfg-row-label">Exportar inventario</div><div class="cfg-row-hint">CSV con todos los productos</div></div>
+                <div class="cfg-row-right"><button class="dk-btn dk-btn-default" type="button" data-setting="export-csv">Descargar</button></div>
+              </div>
+            </article>
+          </main>
+          <aside class="dk-cfg-side">
+            <article class="dk-card dk-cfg-side-card">
+              <div class="dk-cfg-avatar">GP</div>
+              <div class="dk-cfg-account-name">GRIFASI PERFORMANCE</div>
+              <div class="dk-cfg-account-role">Mostrador</div>
+              <div class="dk-cfg-account-meta"><span class="mono" data-app-version>v1.0.0</span></div>
+            </article>
+            <article class="dk-card">
+              <header class="dk-card-head"><h2 class="dk-card-title">Contacto</h2></header>
+              <div class="dk-cfg-social">
+                <a class="dk-cfg-social-btn dk-cfg-social-wsp" href="https://wa.me/5493874887699" target="_blank" rel="noopener" aria-label="WhatsApp">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h4l2 5-2.5 1.5a11 11 0 0 0 4 4L15 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 2-2z"/></svg>
+                  <span>WhatsApp</span>
+                </a>
+                <a class="dk-cfg-social-btn" href="https://hookia.online/" target="_blank" rel="noopener" aria-label="Sitio web">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 3 4 5.7 4 9s-1.5 6-4 9c-2.5-3-4-5.7-4-9s1.5-6 4-9z"/></svg>
+                  <span>Web</span>
+                </a>
+                <a class="dk-cfg-social-btn" href="https://www.instagram.com/hookia.co/" target="_blank" rel="noopener" aria-label="Instagram">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg>
+                  <span>Instagram</span>
+                </a>
+              </div>
+              <div class="dk-cfg-by">por Hookia</div>
+            </article>
+            <article class="dk-cfg-tip">
+              <div class="dk-cfg-tip-eyebrow">Tip</div>
+              <p>Cambiá el PIN periódicamente para mantener segura tu cuenta del mostrador.</p>
+            </article>
+          </aside>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="view-crear-producto" style="display: none;">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-crear-producto en index.html.
+     3 estados visibles según data-state en .cr-root:
+       data-state="loading" → mostrar #cr-loading, ocultar resto
+       data-state="found"   → mostrar #cr-status-found + .found-hero + form (con valores precargados)
+       data-state="unknown" → mostrar #cr-status-unknown + form vacío
+     Hooks JS sugeridos:
+       button[data-action=close]
+       button[data-action=save]
+       button[data-action=cancel]
+       button[data-action=cancel-lookup]
+       button[data-cat=...]         → chips de categoría
+       button[data-unit=...]        → chips de unidad
+       input[data-field=name|brand|description|cost|price|stock-ini|stock-min]
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="cr-root" data-state="found">
+
+    <header class="cr-header">
+      <button class="sc-close" type="button" data-action="close" aria-label="Cerrar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+      <h1 class="cr-header-title">Nuevo producto</h1>
+      <div style="width: 44px;" aria-hidden="true"></div>
+    </header>
+
+    <div class="cr-body">
+
+      <!-- ── Estado: loading ── -->
+      <div id="cr-loading" class="cr-loading" hidden>
+        <div class="spinner" aria-hidden="true">
+          <div class="spinner-ring"></div>
+        </div>
+        <div class="cr-loading-title">Consultando catálogo</div>
+        <div class="cr-loading-sub">Buscando datos del producto en la red</div>
+        <div class="cr-loading-sku mono" data-scanned-sku>—</div>
+      </div>
+
+      <!-- ── Status banner: encontrado ── -->
+      <header id="cr-status-found" class="cr-status cr-status-ok">
+        <span class="cr-status-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+        </span>
+        <div>
+          <div class="cr-status-title">Producto encontrado</div>
+          <div class="cr-status-sub">Coincidencia exacta en catálogo</div>
+        </div>
+      </header>
+
+      <!-- ── Status banner: desconocido ── -->
+      <header id="cr-status-unknown" class="cr-status cr-status-warn" hidden>
+        <span class="cr-status-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2.5-3 4.5"/><circle cx="12" cy="17.5" r="0.5" fill="currentColor"/></svg>
+        </span>
+        <div>
+          <div class="cr-status-title">Producto desconocido</div>
+          <div class="cr-status-sub">No encontrado en catálogo — completá los datos</div>
+        </div>
+      </header>
+
+      <!-- ── Status banner: búsqueda cancelada ── -->
+      <header id="cr-status-cancelled" class="cr-status cr-status-cancelled">
+        <span class="cr-status-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </span>
+        <div>
+          <div class="cr-status-title">Búsqueda cancelada</div>
+          <div class="cr-status-sub">Podés completar los datos manualmente</div>
+        </div>
+      </header>
+
+      <!-- ── Hero (solo en estado "found") ── -->
+      <section class="found-hero">
+        <div class="thumb-lg" aria-hidden="true">
+          <span class="thumb-lg-code mono" data-thumb-code>CUB</span>
+        </div>
+        <div class="found-hero-info">
+          <div class="found-hero-name" data-hero-name>—</div>
+          <div class="found-hero-brand" data-hero-brand>Maxxis</div>
+        </div>
+      </section>
+
+      <!-- Banner sutil "Datos obtenidos…" (mostrar solo en found) -->
+      <div class="found-banner">
+        <span class="found-banner-icon">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 7v4"/><circle cx="8" cy="5" r="0.5" fill="currentColor"/></svg>
+        </span>
+        <span>Datos obtenidos automáticamente — revisá antes de guardar.</span>
+      </div>
+
+      <!-- ── Datos del producto ── -->
+      <section class="form-section">
+        <div class="form-section-title">Datos del producto</div>
+
+        <div class="form-row">
+          <label class="form-label" for="cr-sku">SKU / Código <span class="form-req">*</span></label>
+          <input id="cr-sku" class="form-input mono" type="text" data-field="sku-manual"
+                 data-scanned-sku placeholder="Escaneá o escribí el código" value="" />
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="cr-name">Nombre <span class="form-req">*</span></label>
+          <input id="cr-name" class="form-input" type="text" data-field="name"
+                 placeholder="ej: Cubierta Maxxis Minion 29x2.5"
+                 value="" />
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="cr-brand">Marca</label>
+          <input id="cr-brand" class="form-input" type="text" data-field="brand"
+                 placeholder="ej: Shimano" value="" />
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Categoría <span class="form-req">*</span></label>
+          <div class="cat-chips" data-field-group="category">
+            <button type="button" class="cat-chip" data-cat="Cables">Cables</button>
+            <button type="button" class="cat-chip" data-cat="Cámaras">Cámaras</button>
+            <button type="button" class="cat-chip active" data-cat="Cubiertas">Cubiertas</button>
+            <button type="button" class="cat-chip" data-cat="Frenos">Frenos</button>
+            <button type="button" class="cat-chip" data-cat="Cadenas">Cadenas</button>
+            <button type="button" class="cat-chip" data-cat="Accesorios">Accesorios</button>
+            <button type="button" class="cat-chip" data-cat="Herramientas">Herramientas</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="cr-desc">Descripción</label>
+          <textarea id="cr-desc" class="form-textarea" rows="3" data-field="description"
+                    placeholder="Detalles técnicos, medidas, compatibilidad…"></textarea>
+        </div>
+      </section>
+
+      <!-- ── Precios y stock ── -->
+      <section class="form-section">
+        <div class="form-section-title">Precios y stock</div>
+        <div class="form-section-sub">Completá estos campos antes de guardar</div>
+
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label class="form-label" for="cr-cost">Precio costo <span class="form-req">*</span></label>
+            <div class="form-num has-prefix">
+              <span class="form-num-prefix mono">$</span>
+              <input id="cr-cost" class="form-num-input mono" type="text" inputmode="decimal"
+                     data-field="cost" placeholder="0,00" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="cr-price">Precio venta <span class="form-req">*</span></label>
+            <div class="form-num has-prefix">
+              <span class="form-num-prefix mono">$</span>
+              <input id="cr-price" class="form-num-input mono" type="text" inputmode="decimal"
+                     data-field="price" placeholder="0,00" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Unidad <span class="form-req">*</span></label>
+          <div class="unit-picker" data-field-group="unit">
+            <button type="button" class="unit-chip active" data-unit="unidad">unidad</button>
+            <button type="button" class="unit-chip" data-unit="par">par</button>
+            <button type="button" class="unit-chip" data-unit="caja">caja</button>
+            <button type="button" class="unit-chip" data-unit="metro">metro</button>
+            <button type="button" class="unit-chip" data-unit="kg">kg</button>
+            <button type="button" class="unit-chip" data-unit="litro">litro</button>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label class="form-label" for="cr-stock-ini">Stock inicial <span class="form-req">*</span></label>
+            <div class="form-num">
+              <input id="cr-stock-ini" class="form-num-input mono" type="text" inputmode="numeric"
+                     data-field="stock-ini" placeholder="0" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="cr-stock-min">Stock mínimo <span class="form-req">*</span></label>
+            <div class="form-num">
+              <input id="cr-stock-min" class="form-num-input mono" type="text" inputmode="numeric"
+                     data-field="stock-min" placeholder="0" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ── Dock acciones (oculto durante loading) ── -->
+    <div class="sc-dock cr-dock" data-state-default>
+      <button class="sc-confirm sc-confirm-in" type="button" data-action="save">Guardar producto</button>
+      <button class="sc-cancel" type="button" data-action="cancel">Cancelar</button>
+    </div>
+
+    <!-- Dock alternativo durante loading -->
+    <div class="sc-dock cr-dock cr-dock-loading" data-state-loading hidden>
+      <button class="cr-cancel-big" type="button" data-action="cancel-lookup">Cancelar búsqueda</button>
+    </div>
+
+  </div>
+</div>
+    </div>
+
+    <div id="view-ventas" style="display: none;">
+      <header class="vm-header">
+        <button class="vm-back" type="button" data-action="back" data-view="dashboard" aria-label="Volver a Inicio">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <span class="vm-title">Ventas</span>
+      </header>
+
+      <div class="vt-pos">
+
+        <div class="vt-tabs" role="tablist" aria-label="Vista" style="margin: 0 0 16px;">
+          <button class="vt-tab-btn active" type="button" data-action="tab" data-tab="caja" role="tab">Caja</button>
+          <button class="vt-tab-btn" type="button" data-action="tab" data-tab="historial" role="tab">
+            Historial <span class="vt-tab-btn-count">0</span>
+          </button>
+        </div>
+
+        <!-- TAB CAJA -->
+        <div class="vt-tab-panel active" data-tab-panel="caja">
+          <div class="vt-tab-caja">
+
+            <section class="vt-panel vt-panel-products" aria-label="Buscar productos">
+              <div class="vt-search-row">
+                <div class="vt-search">
+                  <span class="vt-search-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/></svg>
+                  </span>
+                  <input type="search" data-action="search" placeholder="Buscar producto o SKU…" autocomplete="off" />
+                  <button class="vt-search-clear" type="button" data-action="clear-search" aria-label="Limpiar" hidden>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+                  </button>
+                </div>
+                <button class="vt-scan-btn" type="button" data-action="scan" aria-label="Escanear código">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M21 7V5a2 2 0 0 0-2-2h-2"/><path d="M3 17v2a2 2 0 0 0 2 2h2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 12h10"/></svg>
+                </button>
+              </div>
+              <div class="vt-grid-wrap">
+                <div class="vt-grid" data-product-grid></div>
+              </div>
+            </section>
+
+            <aside class="vt-panel vt-panel-cart" aria-label="Carrito de venta">
+              <div class="vt-cart-head">
+                <h2 class="vt-cart-title">Carrito <span class="vt-cart-count" data-cart-count>0</span></h2>
+                <button class="vt-cart-clear-mini" type="button" data-action="clear" disabled>Vaciar</button>
+              </div>
+              <ul class="vt-cart-list" data-cart-list></ul>
+              <div class="vt-cart-foot">
+                <div class="vt-cart-totals">
+                  <div class="vt-cart-total-row"><span>Subtotal</span><span class="vt-cart-total-val" data-cart-subtotal>$ 0</span></div>
+                  <div class="vt-cart-total-row grand"><span>Total</span><span class="vt-cart-total-val" data-cart-total>$ 0</span></div>
+                </div>
+                <button class="vt-checkout" type="button" data-action="checkout" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+                  Cobrar
+                </button>
+              </div>
+            </aside>
+
+          </div>
+        </div>
+
+        <!-- TAB HISTORIAL -->
+        <div class="vt-tab-panel" data-tab-panel="historial">
+          <div class="vt-history-card">
+            <header class="vt-history-head">
+              <h2 class="vt-history-title">Últimas ventas</h2>
+              <span class="vt-history-sub" data-history-sub>Sin ventas registradas todavía</span>
+            </header>
+            <ul class="vt-history-list" data-history-list></ul>
+          </div>
+        </div>
+
+        <!-- MOBILE: bottom bar -->
+        <div class="vt-bottom-bar" data-bottom-bar>
+          <div class="vt-bottom-bar-info">
+            <div class="vt-bottom-bar-count" data-bb-count>0 items</div>
+            <div class="vt-bottom-bar-total" data-bb-total>$ 0</div>
+          </div>
+          <button class="vt-bottom-bar-btn" type="button" data-action="open-cart">
+            Ver carrito
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l5 5-5 5"/></svg>
+          </button>
+        </div>
+
+        <!-- MOBILE: sheet del carrito -->
+        <div class="vt-sheet-backdrop" data-action="close-cart" aria-hidden="true"></div>
+        <div class="vt-sheet" role="dialog" aria-label="Carrito">
+          <div class="vt-sheet-handle"></div>
+          <aside class="vt-panel vt-panel-cart">
+            <div class="vt-cart-head">
+              <h2 class="vt-cart-title">Carrito <span class="vt-cart-count" data-cart-count>0</span></h2>
+              <button class="vt-cart-clear-mini" type="button" data-action="clear" disabled>Vaciar</button>
+            </div>
+            <ul class="vt-cart-list" data-cart-list></ul>
+            <div class="vt-cart-foot">
+              <div class="vt-cart-totals">
+                <div class="vt-cart-total-row"><span>Subtotal</span><span class="vt-cart-total-val" data-cart-subtotal>$ 0</span></div>
+                <div class="vt-cart-total-row grand"><span>Total</span><span class="vt-cart-total-val" data-cart-total>$ 0</span></div>
+              </div>
+              <button class="vt-checkout" type="button" data-action="checkout" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+                Cobrar
+              </button>
+            </div>
+          </aside>
+        </div>
+
+      </div>
+
+      <!-- Modal detalle de venta -->
+      <div class="vt-detail-modal" data-modal="sale-detail" role="dialog" aria-modal="true">
+        <div class="vt-detail-box">
+          <header class="vt-detail-head">
+            <div class="vt-detail-title-block">
+              <h2 class="vt-detail-title" data-detail-title>Venta</h2>
+              <span class="vt-detail-sub" data-detail-sub>—</span>
+            </div>
+            <button class="vt-detail-close" type="button" data-action="close-detail" aria-label="Cerrar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+            </button>
+          </header>
+          <div class="vt-detail-body">
+            <ul class="vt-detail-items" data-detail-items></ul>
+            <div class="vt-detail-total">
+              <span class="vt-detail-total-label">Total</span>
+              <span class="vt-detail-total-val" data-detail-total>$ 0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="bottom-nav" aria-label="Navegación principal">
+        <button class="nav-item" type="button" data-view="dashboard">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></svg>
+          <span>Inicio</span>
+        </button>
+        <button class="nav-item" type="button" data-view="inventario">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+          <span>Inventario</span>
+        </button>
+        <button class="nav-item nav-fab" type="button" data-view="escaner" aria-label="Escáner">
+          <span class="nav-fab-circle">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M21 7V5a2 2 0 0 0-2-2h-2"/><path d="M3 17v2a2 2 0 0 0 2 2h2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 12h10"/></svg>
+          </span>
+          <span>Escáner</span>
+        </button>
+        <button class="nav-item active" type="button" aria-current="page">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2.4 11.5a2 2 0 0 0 2 1.5h8.2a2 2 0 0 0 2-1.5L21 9H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17.5" cy="21" r="1"/></svg>
+          <span>Ventas</span>
+        </button>
+        <button class="nav-item" type="button" data-view="config">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          <span>Config</span>
+        </button>
+      </nav>
+    </div>
+
+    <div id="view-metricas" style="display: none;">
+      <header class="vm-header">
+        <button class="vm-back" type="button" data-action="back" data-view="dashboard" aria-label="Volver a Inicio">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <span class="vm-title">Métricas</span>
+      </header>
+
+      <div class="mt-root">
+
+        <div class="mt-filters">
+          <div class="mt-period" role="tablist" aria-label="Período">
+            <button class="mt-period-btn active" type="button" data-period="hoy">Hoy</button>
+            <button class="mt-period-btn" type="button" data-period="semana">Semana</button>
+            <button class="mt-period-btn" type="button" data-period="mes">Mes</button>
+          </div>
+          <span class="mt-period-range" data-period-range>Hoy</span>
+        </div>
+
+        <section class="mt-kpi-grid" aria-label="Indicadores principales">
+          <article class="mt-kpi mt-kpi-accent">
+            <div class="mt-kpi-head">
+              <span class="mt-kpi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2.4 11.5a2 2 0 0 0 2 1.5h8.2a2 2 0 0 0 2-1.5L21 9H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17.5" cy="21" r="1"/></svg></span>
+              <div class="mt-kpi-label">Ventas del día</div>
+            </div>
+            <div class="mt-kpi-value" data-kpi-ventas-dia>—</div>
+            <div class="mt-kpi-foot" data-kpi-ventas-dia-sub>—</div>
+          </article>
+          <article class="mt-kpi">
+            <div class="mt-kpi-head">
+              <span class="mt-kpi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H7"/></svg></span>
+              <div class="mt-kpi-label">Ingresos</div>
+            </div>
+            <div class="mt-kpi-value" data-kpi-ingresos>—</div>
+            <div class="mt-kpi-foot"><span class="mt-kpi-delta" data-kpi-ingresos-delta>—</span><span data-kpi-ingresos-sub>—</span></div>
+          </article>
+          <article class="mt-kpi">
+            <div class="mt-kpi-head">
+              <span class="mt-kpi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>
+              <div class="mt-kpi-label">Ganancia estimada</div>
+            </div>
+            <div class="mt-kpi-value" data-kpi-ganancia>—</div>
+            <div class="mt-kpi-foot" data-kpi-ganancia-sub>—</div>
+          </article>
+          <article class="mt-kpi">
+            <div class="mt-kpi-head">
+              <span class="mt-kpi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l10-10"/><path d="M17 7v10H7"/><path d="M17 17L7 7"/></svg></span>
+              <div class="mt-kpi-label">Entradas / Salidas</div>
+            </div>
+            <div class="mt-kpi-split"><span class="in mono" data-kpi-in>—</span><span class="sep">/</span><span class="out mono" data-kpi-out>—</span></div>
+            <div class="mt-kpi-split-bar" aria-hidden="true"><span class="seg-in" data-kpi-bar-in style="width:0%"></span><span class="seg-out" data-kpi-bar-out style="width:0%"></span></div>
+            <div class="mt-kpi-foot" data-kpi-inout-sub>—</div>
+          </article>
+        </section>
+
+        <section class="mt-grid-2">
+          <div class="mt-card">
+            <header class="mt-card-head"><h2 class="mt-card-title">Resumen del período</h2><span class="mt-card-sub">Entradas vs salidas por día</span></header>
+            <div class="mt-chart-wrap"><canvas data-chart-weekly></canvas></div>
+            <div class="mt-chart-legend">
+              <span class="mt-chart-legend-item"><span class="mt-chart-legend-dot in"></span>Entradas</span>
+              <span class="mt-chart-legend-item"><span class="mt-chart-legend-dot out"></span>Salidas</span>
+            </div>
+          </div>
+          <div class="mt-card">
+            <header class="mt-card-head"><h2 class="mt-card-title">Variación de stock</h2><span class="mt-card-sub">Cambio acumulado en el período</span></header>
+            <div class="mt-chart-wrap"><canvas data-chart-stock></canvas></div>
+            <div class="mt-chart-legend"><span class="mt-chart-legend-item"><span class="mt-chart-legend-dot stock"></span>Stock neto acumulado</span></div>
+          </div>
+        </section>
+
+        <section class="mt-grid-2">
+          <div class="mt-card">
+            <header class="mt-card-head"><h2 class="mt-card-title">Más salidas</h2><span class="mt-card-sub">Por unidades</span></header>
+            <ul class="mt-list" data-top-salidas></ul>
+          </div>
+          <div class="mt-card">
+            <header class="mt-card-head"><h2 class="mt-card-title">Más vendidos</h2><span class="mt-card-sub">Por ingreso</span></header>
+            <ul class="mt-list" data-top-ingreso></ul>
+          </div>
+        </section>
+
+        <section class="mt-grid-2">
+          <div class="mt-card">
+            <header class="mt-card-head"><h2 class="mt-card-title">Bajo stock</h2><span class="mt-card-sub">Por debajo del mínimo</span></header>
+            <ul class="mt-list" data-bajo-stock></ul>
+          </div>
+          <div class="mt-card mt-card-flush">
+            <header class="mt-card-head"><h2 class="mt-card-title">Movimientos recientes</h2><span class="mt-card-sub">Últimos 10</span></header>
+            <div class="mt-table-wrap">
+              <table class="mt-table">
+                <thead><tr><th>Producto</th><th>Tipo</th><th class="num">Cantidad</th><th>Cuándo</th><th>Motivo</th></tr></thead>
+                <tbody data-mov-list></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <nav class="bottom-nav" aria-label="Navegación principal">
+        <button class="nav-item" type="button" data-view="dashboard">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></svg>
+          <span>Inicio</span>
+        </button>
+        <button class="nav-item" type="button" data-view="inventario">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+          <span>Inventario</span>
+        </button>
+        <button class="nav-item nav-fab" type="button" data-view="escaner" aria-label="Escáner">
+          <span class="nav-fab-circle">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M21 7V5a2 2 0 0 0-2-2h-2"/><path d="M3 17v2a2 2 0 0 0 2 2h2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 12h10"/></svg>
+          </span>
+          <span>Escáner</span>
+        </button>
+        <button class="nav-item" type="button" data-view="ventas">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2.4 11.5a2 2 0 0 0 2 1.5h8.2a2 2 0 0 0 2-1.5L21 9H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17.5" cy="21" r="1"/></svg>
+          <span>Ventas</span>
+        </button>
+        <button class="nav-item active" type="button" aria-current="page">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V5"/><path d="M16 16v-8"/><path d="M21 16v-4"/></svg>
+          <span>Métricas</span>
+        </button>
+        <button class="nav-item" type="button" data-view="config">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          <span>Config</span>
+        </button>
+      </nav>
+    </div>
+
+    <div id="view-scan-modal" style="display: none;">
+      <!-- ═══════════════════════════════════════════════════════════
+     Pegar este contenido dentro de #view-scan-modal en index.html.
+
+     Esta vista es un OVERLAY full-screen que se monta sobre el escáner
+     o el detalle cuando se confirma un escaneo / tap en Reponer.
+
+     Para mostrarlo:
+       document.getElementById('view-scan-modal').style.display = 'block';
+     Para cerrarlo:
+       document.getElementById('view-scan-modal').style.display = 'none';
+
+     Hooks JS sugeridos:
+       button[data-action=close-modal]
+       button[data-movement=in|out]   → toggle Entrada/Salida
+       button[data-action=qty-minus|qty-plus|qty-open-numpad]
+       input[data-field=reason]
+       button[data-action=confirm-move]
+       button[data-action=cancel-move]
+
+     Datos a inyectar:
+       [data-product-sku]       → SKU en la pill
+       [data-product-name]      → nombre del producto
+       [data-product-brand]     → marca
+       [data-stock-current]     → stock actual
+       [data-stock-unit]        → unidad/unidades
+       [data-stock-min]         → mínimo
+       [data-qty-current]       → cantidad actual del stepper
+       [data-qty-result]        → stock resultante (preview)
+       [data-stock-chip]        → cambiar clase: sc-stock-ok|sc-stock-warn|sc-stock-crit
+
+     Templates de overlays internos (numpad, toast) más abajo.
+═══════════════════════════════════════════════════════════ -->
+<div class="pwa-root" data-theme="dark">
+  <div class="sc-root" data-movement="in">
+
+    <header class="sc-header">
+      <button class="sc-close" type="button" data-action="close-modal" aria-label="Cerrar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+      <div class="sc-scan-pill">
+        <span class="sc-scan-dot" aria-hidden="true">
+          <svg width="8" height="8" viewBox="0 0 12 12"><circle cx="6" cy="6" r="3" fill="currentColor"/></svg>
+        </span>
+        <span class="sc-scan-pill-label">Escaneado</span>
+        <span class="sc-scan-pill-sku mono" data-product-sku>—</span>
+      </div>
+    </header>
+
+    <section class="sc-hero">
+      <div class="sc-brand mono" data-product-brand>—</div>
+      <h1 class="sc-name" data-product-name>—</h1>
+      <div class="sc-stock-chip sc-stock-ok" data-stock-chip>
+        <span class="sc-stock-dot" aria-hidden="true"></span>
+        <span class="sc-stock-text">
+          En stock:
+          <span class="mono"><strong data-stock-current>—</strong></span>
+          <span data-stock-unit>unidades</span>
+        </span>
+      </div>
+    </section>
+
+    <section class="sc-section">
+      <div class="sc-section-label">Tipo de movimiento</div>
+      <div class="sc-toggle" role="tablist" aria-label="Tipo de movimiento">
+        <button role="tab" aria-selected="true" type="button" data-movement="in" class="sc-tg sc-tg-in active">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V6"/><path d="M5 12l7-7 7 7"/></svg>
+          <span>Entrada</span>
+        </button>
+        <button role="tab" aria-selected="false" type="button" data-movement="out" class="sc-tg sc-tg-out">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14"/><path d="M5 12l7 7 7-7"/></svg>
+          <span>Salida</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="sc-section">
+      <div class="sc-section-label">Cantidad</div>
+      <div class="sc-stepper">
+        <button class="sc-step-btn" type="button" data-action="qty-minus" aria-label="Disminuir">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+        </button>
+        <button class="sc-step-num" type="button" data-action="qty-open-numpad" aria-label="Abrir teclado numérico">
+          <span class="sc-step-num-value mono" data-qty-current>3</span>
+          <span class="sc-step-num-unit" data-qty-unit>unidades</span>
+        </button>
+        <button class="sc-step-btn" type="button" data-action="qty-plus" aria-label="Aumentar">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="sc-step-hint">
+        Resultará en
+        <span class="mono sc-step-hint-num" data-qty-result>21</span>
+        <span data-qty-result-unit>unidades</span>
+        <!-- Si invalid: agregar también: <span class="sc-step-hint-err"> · stock negativo</span> -->
+      </div>
+    </section>
+
+    <section class="sc-section">
+      <div class="sc-section-label">
+        Motivo <span class="sc-section-label-opt">opcional</span>
+      </div>
+      <input class="sc-input" type="text" inputmode="text"
+             data-field="reason" placeholder="ej: compra proveedor" />
+    </section>
+
+    <div class="sc-dock">
+      <button class="sc-confirm sc-confirm-in" type="button" data-action="confirm-move">
+        <span>Confirmar </span><span data-confirm-verb>entrada</span><span> de </span><span data-confirm-qty>3</span>
+      </button>
+      <button class="sc-cancel" type="button" data-action="cancel-move">Cancelar</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         Numpad overlay (oculto por defecto). Mostrar cuando se
+         tocó el número del stepper. La estructura es:
+         <div class="np-backdrop"></div> + <div class="np-sheet">…</div>
+
+         Hooks:
+           div.np-backdrop[data-action=close-numpad]
+           button[data-np-key=0..9]
+           button[data-np-key=clear|back]
+           button[data-action=accept-numpad]
+    ════════════════════════════════════════════════════════ -->
+    <div class="np-backdrop" data-action="close-numpad" hidden></div>
+    <div class="np-sheet" hidden>
+      <div class="np-head">
+        <div class="np-label">Cantidad</div>
+        <div class="np-display mono" data-numpad-display>3</div>
+      </div>
+      <div class="np-grid">
+        <button class="np-key" type="button" data-np-key="1"><span class="mono">1</span></button>
+        <button class="np-key" type="button" data-np-key="2"><span class="mono">2</span></button>
+        <button class="np-key" type="button" data-np-key="3"><span class="mono">3</span></button>
+        <button class="np-key" type="button" data-np-key="4"><span class="mono">4</span></button>
+        <button class="np-key" type="button" data-np-key="5"><span class="mono">5</span></button>
+        <button class="np-key" type="button" data-np-key="6"><span class="mono">6</span></button>
+        <button class="np-key" type="button" data-np-key="7"><span class="mono">7</span></button>
+        <button class="np-key" type="button" data-np-key="8"><span class="mono">8</span></button>
+        <button class="np-key" type="button" data-np-key="9"><span class="mono">9</span></button>
+        <button class="np-key np-key-action" type="button" data-np-key="clear">
+          <span class="np-key-action-text">C</span>
+        </button>
+        <button class="np-key" type="button" data-np-key="0"><span class="mono">0</span></button>
+        <button class="np-key np-key-action" type="button" data-np-key="back" aria-label="Borrar">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.5 6h13a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-13L3 14z"/>
+            <path d="M12.5 11l6 6"/><path d="M18.5 11l-6 6"/>
+          </svg>
+        </button>
+      </div>
+      <button class="np-confirm" type="button" data-action="accept-numpad">Listo</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         Toast de éxito (oculto por defecto). Mostrar por 2s
+         después de confirmar el movimiento, luego cerrar todo.
+    ════════════════════════════════════════════════════════ -->
+    <div class="toast-wrap" data-toast hidden>
+      <div class="toast">
+        <div class="toast-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+        </div>
+        <div class="toast-body">
+          <div class="toast-title" data-toast-title>Entrada registrada</div>
+          <div class="toast-sub mono">
+            Stock actualizado: <strong data-toast-stock>21</strong> unidades
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+    </div>
+
+      </div><!-- /.dk-content -->
+    </main><!-- /.dk-main -->
+
+  
+  </div>
+
+  <script src="lib/html5-qrcode.min.js"></script>
+  <script type="module" src="js/toast.js"></script>
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/db.js"></script>
+  <script type="module" src="js/lookup.js"></script>
+  <script type="module" src="js/router.js"></script>
+  <script type="module" src="js/desktop-shell.js"></script>
+  <script type="module" src="js/pin-app.js"></script>
+  <script type="module" src="js/scanner.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+  <script type="module" src="js/products.js"></script>
+  <script type="module" src="js/movements.js"></script>
+  <script type="module" src="js/lowstock.js"></script>
+  <script type="module" src="js/settings.js"></script>
+  <script type="module" src="js/ventas.js"></script>
+  <script type="module" src="js/metrics.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+/* Grifasi Performance — Guía rápida A4 imprimible */
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #2a2823;
+  font-family: 'Geist', 'Helvetica Neue', Arial, sans-serif;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Chrome de pantalla (oculto al imprimir) ──────────────── */
+.screen-chrome {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: rgba(20, 18, 16, 0.94);
+  backdrop-filter: blur(10px);
+  color: #f5efe5;
+  font-size: 13px;
+}
+.screen-chrome-label {
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  opacity: 0.7;
+}
+.screen-chrome-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: #E07A3C;
+  color: white;
+  border: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.screen-chrome-btn:hover { filter: brightness(1.05); }
+
+/* ── Página A4 ─────────────────────────────────────────────── */
+.guide-page {
+  width: 210mm;
+  height: 297mm;
+  margin: 72px auto 36px;
+  padding: 11mm 16mm 9mm;
+  background: #fdfcf9;
+  color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.18),
+    0 30px 60px rgba(0,0,0,0.35);
+  font-feature-settings: 'ss01';
+}
+
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* ── Header ────────────────────────────────────────────────── */
+.guide-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16mm;
+  padding-bottom: 4mm;
+  border-bottom: 1px solid #d8d3c8;
+  margin-bottom: 5mm;
+}
+.guide-brand {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.guide-brand-mark {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 26px;
+}
+.guide-brand-mark > span {
+  display: block;
+  width: 5px;
+  background: #E07A3C;
+}
+.guide-brand-mark > span:nth-child(1) { height: 14px; }
+.guide-brand-mark > span:nth-child(2) { height: 20px; }
+.guide-brand-mark > span:nth-child(3) { height: 26px; }
+.guide-brand-text { display: flex; flex-direction: column; line-height: 1; }
+.guide-brand-name {
+  font-size: 16pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #1a1a1a;
+}
+.guide-brand-sub {
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: #888;
+  margin-top: 3px;
+}
+
+.guide-title { text-align: right; }
+.guide-title-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: #888;
+}
+.guide-title-h1 {
+  margin: 4px 0 5px;
+  font-size: 22pt;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #1a1a1a;
+}
+.guide-title-meta {
+  font-size: 9.5pt;
+  font-weight: 500;
+  color: #555;
+  font-style: italic;
+}
+
+/* ── Sections ──────────────────────────────────────────────── */
+.guide-sections {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.guide-section {
+  display: grid;
+  grid-template-columns: 14mm 1fr 30mm;
+  gap: 6mm;
+  align-items: flex-start;
+  padding: 3mm 0;
+  border-bottom: 1px dashed #d8d3c8;
+}
+.guide-section:last-child { border-bottom: none; }
+
+.guide-num {
+  width: 13mm;
+  height: 13mm;
+  border-radius: 50%;
+  background: #E07A3C;
+  color: white;
+  font-family: 'Geist', sans-serif;
+  font-size: 18pt;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /* Asegurar fondo en print */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.guide-content {
+  padding-top: 1mm;
+}
+.guide-section-title {
+  margin: 0 0 2mm;
+  font-size: 13pt;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: #1a1a1a;
+  line-height: 1.15;
+}
+.guide-body {
+  margin: 0;
+  font-size: 10.5pt;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #333;
+  text-wrap: pretty;
+}
+.guide-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: ll;
+  font-size: 10.5pt;
+  line-height: 1.4;
+  color: #333;
+}
+.guide-list li {
+  counter-increment: ll;
+  padding-left: 22px;
+  position: relative;
+  margin-bottom: 2mm;
+}
+.guide-list li:last-child { margin-bottom: 0; }
+.guide-list li::before {
+  content: counter(ll);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.guide-list-inline li { margin-bottom: 1.5mm; }
+
+.guide-mono {
+  background: #f0ece2;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 95%;
+  border: 1px solid #e5dfd0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.guide-body strong, .guide-list strong {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+.guide-body em, .guide-list em {
+  font-style: italic;
+  color: #555;
+}
+
+.guide-examples {
+  margin-top: 2.5mm;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5mm;
+}
+.guide-ex {
+  display: inline-block;
+  padding: 2mm 4mm;
+  background: #fff;
+  border: 1px solid #d8d3c8;
+  border-left: 3px solid #E07A3C;
+  border-radius: 3px;
+  font-size: 9.5pt;
+  font-style: italic;
+  color: #444;
+  align-self: flex-start;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ── Ilustración derecha ───────────────────────────────────── */
+.guide-illus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+}
+.guide-illus svg {
+  width: 100%;
+  max-width: 26mm;
+  height: auto;
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+.guide-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 3mm;
+  padding-top: 3mm;
+  border-top: 1px solid #d8d3c8;
+  font-size: 8.5pt;
+  color: #888;
+}
+.guide-footer-sep { margin: 0 6px; opacity: 0.5; }
+.guide-footer-left .mono, .guide-footer-right { color: #555; font-weight: 500; }
+
+/* ── Print ─────────────────────────────────────────────────── */
+@media print {
+  html, body { background: white; }
+  .screen-chrome { display: none !important; }
+  .guide-page {
+    margin: 0;
+    box-shadow: none;
+    width: 210mm;
+    height: 297mm;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* ── Pantallas pequeñas (escala para que se vea entera) ──── */
+@media (max-width: 900px) {
+  .guide-page {
+    transform: scale(0.85);
+    transform-origin: top center;
+    margin-bottom: -60px;
+  }
+}

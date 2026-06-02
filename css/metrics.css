@@ -1,0 +1,433 @@
+/* Grifasi Performance — Métricas (analytics)
+   Reusa tokens y chrome del sistema (dashboard.css + desktop.css). */
+
+.mt-root {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Filtros de período ────────────────────────────────────── */
+.mt-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.mt-period {
+  display: inline-flex;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 2px;
+}
+.mt-period-btn {
+  height: 36px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg-2);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+}
+.mt-period-btn.active {
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: 0 0 0 1px var(--line), 0 1px 2px oklch(0 0 0 / 0.12);
+}
+.mt-period-range {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  margin-left: auto;
+}
+
+/* ── KPI cards ─────────────────────────────────────────────── */
+.mt-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+@media (max-width: 1199px) { .mt-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.mt-kpi {
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 140px;
+}
+.mt-kpi-accent {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 14%, var(--bg-2)) 0%, var(--bg-2) 70%);
+  border-color: color-mix(in oklab, var(--accent) 32%, var(--line));
+}
+.mt-kpi-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mt-kpi-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--accent) 16%, transparent);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mt-kpi-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.mt-kpi-value {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+.mt-kpi-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+.mt-kpi-delta {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.mt-kpi-delta-up   { color: var(--ok);   background: color-mix(in oklab, var(--ok) 14%, transparent); }
+.mt-kpi-delta-down { color: var(--crit); background: color-mix(in oklab, var(--crit) 14%, transparent); }
+.mt-kpi-delta-flat { color: var(--fg-2); background: color-mix(in oklab, var(--fg) 8%, transparent); }
+
+/* En/Sal split — barras horizontales mini */
+.mt-kpi-split {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+}
+.mt-kpi-split .in  { color: var(--ok); }
+.mt-kpi-split .sep { color: var(--fg-3); font-size: 16px; font-weight: 400; }
+.mt-kpi-split .out { color: var(--crit); }
+.mt-kpi-split-bar {
+  display: flex;
+  height: 6px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg-3);
+  margin-top: 4px;
+}
+.mt-kpi-split-bar .seg-in  { background: var(--ok); }
+.mt-kpi-split-bar .seg-out { background: var(--crit); }
+
+/* ── Card primitive (paneles) ──────────────────────────────── */
+.mt-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+.mt-card-flush { padding: 0; overflow: hidden; }
+.mt-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.mt-card-flush .mt-card-head {
+  padding: 18px 20px 14px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.mt-card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+.mt-card-sub {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+/* ── Grid 2 columnas (charts + listas) ─────────────────────── */
+.mt-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 1099px) { .mt-grid-2 { grid-template-columns: 1fr; } }
+
+/* ── Canvas charts ─────────────────────────────────────────── */
+.mt-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+}
+.mt-chart-wrap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.mt-chart-legend {
+  display: flex;
+  gap: 18px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+  flex-wrap: wrap;
+}
+.mt-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mt-chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+.mt-chart-legend-dot.in  { background: var(--ok); }
+.mt-chart-legend-dot.out { background: var(--crit); }
+.mt-chart-legend-dot.stock { background: var(--accent); }
+
+/* ── Listas top productos / bajo stock ─────────────────────── */
+.mt-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mt-list-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.mt-list-row:last-child { border-bottom: none; }
+.mt-rank {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--bg-3);
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.mt-list-row:nth-child(1) .mt-rank { background: var(--accent); color: oklch(0.99 0.005 80); }
+[data-theme="light"] .mt-list-row:nth-child(1) .mt-rank { color: oklch(0.99 0 0); }
+
+.mt-list-info { min-width: 0; }
+.mt-list-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mt-list-meta {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+}
+.mt-list-side {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.mt-list-side-main {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+}
+.mt-list-side-sub {
+  font-size: 11px;
+  color: var(--fg-3);
+}
+
+/* Bar inline para bajo stock */
+.mt-list-bar {
+  margin-top: 6px;
+  height: 4px;
+  border-radius: 3px;
+  background: var(--bg-3);
+  overflow: hidden;
+  position: relative;
+}
+.mt-list-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 3px;
+}
+.mt-list-bar-fill.crit { background: var(--crit); }
+.mt-list-bar-fill.warn { background: var(--warn); }
+
+/* ── Tabla de movimientos recientes ────────────────────────── */
+.mt-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.mt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 560px;
+}
+.mt-table thead th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-3);
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.mt-table thead th.num { text-align: right; }
+.mt-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: middle;
+  color: var(--fg);
+}
+.mt-table tbody tr:last-child td { border-bottom: none; }
+.mt-table tbody tr:hover { background: color-mix(in oklab, var(--fg) 3%, transparent); }
+.mt-table td.num { text-align: right; }
+
+.mt-mov-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+}
+.mt-mov-pill .mt-mov-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.mt-mov-pill.in  { background: color-mix(in oklab, var(--ok) 14%, transparent);   color: var(--ok); }
+.mt-mov-pill.in .mt-mov-dot  { background: var(--ok); }
+.mt-mov-pill.out { background: color-mix(in oklab, var(--crit) 14%, transparent); color: var(--crit); }
+.mt-mov-pill.out .mt-mov-dot { background: var(--crit); }
+.mt-mov-pill.adj { background: color-mix(in oklab, var(--warn) 14%, transparent); color: var(--warn); }
+.mt-mov-pill.adj .mt-mov-dot { background: var(--warn); }
+
+.mt-mov-qty {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.mt-mov-qty.in  { color: var(--ok); }
+.mt-mov-qty.out { color: var(--crit); }
+
+/* ── Empty / loading states ────────────────────────────────── */
+.mt-empty {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--fg-3);
+}
+.mt-empty-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg-2);
+  margin-bottom: 4px;
+}
+.mt-empty-sub { font-size: 12px; }
+
+.mt-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-3) 0%,
+    color-mix(in oklab, var(--fg) 5%, var(--bg-3)) 50%,
+    var(--bg-3) 100%
+  );
+  background-size: 200% 100%;
+  animation: mt-shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+@keyframes mt-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.mt-skel-num   { height: 28px; width: 60%; }
+.mt-skel-line  { height: 14px; width: 100%; }
+.mt-skel-bar   { height: 8px; width: 100%; margin-top: 6px; }
+
+/* ── Mobile ────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .mt-card { padding: 16px; }
+  .mt-card-flush { padding: 0; }
+  .mt-kpi { padding: 14px; min-height: 110px; gap: 10px; }
+  .mt-kpi-value { font-size: 24px; }
+  .mt-kpi-label { font-size: 10px; }
+  .mt-period { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+  .mt-period-btn { flex-shrink: 0; }
+  .mt-period-range { width: 100%; text-align: left; margin-left: 0; }
+  .mt-chart-wrap { height: 180px; }
+  .mt-card-flush .mt-card-head { padding: 16px; }
+}
+
+/* Integración SPA: en <1024 el .dk-content se colapsa (display:contents),
+   damos padding exterior a la vista. */
+@media (max-width: 1023px) {
+  .mt-root { padding: 12px; }
+}
+
+/* Bottom-nav sticky scoped al contenedor de métricas */
+#view-metricas .bottom-nav {
+  position: sticky;
+  inset: auto;
+  bottom: 0;
+  z-index: 5;
+}
