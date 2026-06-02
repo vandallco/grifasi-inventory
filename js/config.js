@@ -1,5 +1,5 @@
-// ============================================================
-// GRIFASI PERFORMANCE — Configuración global de la app
+﻿// ============================================================
+// Configuración global de la app
 // ============================================================
 // Este archivo se carga ANTES que cualquier otro script.
 // Los valores se exponen en window.APP_CONFIG para que todos

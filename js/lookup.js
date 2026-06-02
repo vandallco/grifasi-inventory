@@ -1,5 +1,5 @@
-// ============================================================
-// GRIFASI PERFORMANCE — Lookup de productos por código de barras
+﻿// ============================================================
+// Lookup de productos por código de barras
 // ============================================================
 // Consulta UPCitemdb (free tier: 100 lookups/día sin API key).
 // Retorna un objeto compatible con data-field del form de creación,

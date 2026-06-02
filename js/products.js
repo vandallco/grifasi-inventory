@@ -1,4 +1,4 @@
-// GRIFASI PERFORMANCE — Inventario / Detalle / Crear producto
+﻿// Inventario / Detalle / Crear producto
 (() => {
   // ── Helpers ────────────────────────────────────────────────
   function _escapeHtml(str) {

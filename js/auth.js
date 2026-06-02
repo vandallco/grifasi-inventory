@@ -1,5 +1,5 @@
-// ============================================================
-// GRIFASI PERFORMANCE — Autenticación por PIN
+﻿// ============================================================
+// Autenticación por PIN
 // ============================================================
 // Flujo:
 //   1. validatePin(pin) → consulta Supabase config → guarda

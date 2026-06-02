@@ -1,4 +1,4 @@
-// GRIFASI PERFORMANCE — Bajo stock
+﻿// Bajo stock
 (() => {
   function _escapeHtml(str) {
     return String(str ?? '')

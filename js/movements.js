@@ -1,4 +1,4 @@
-// GRIFASI PERFORMANCE — Modal de movimientos de stock (overlay full-screen)
+﻿// Modal de movimientos de stock (overlay full-screen)
 // Maneja #view-scan-modal: entrada/salida, cantidad (stepper + numpad),
 // validación y registro vía DB.registrarMovimiento (RPC atómica).
 (() => {

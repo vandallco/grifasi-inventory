@@ -1,4 +1,4 @@
-// GRIFASI PERFORMANCE — Configuración
+﻿// Configuración
 (() => {
   function _toast(msg, tipo = 'success') {
     window.Toast?.show(msg, tipo);

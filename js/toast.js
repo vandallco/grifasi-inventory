@@ -1,5 +1,5 @@
-// ============================================================
-// GRIFASI PERFORMANCE — Toast global
+﻿// ============================================================
+// Toast global
 // ============================================================
 // Capa fija (position: fixed) montada fuera del flujo scrolleable.
 //   • Auto-descarte a los ~2.6s (no se acumulan).

@@ -1,5 +1,5 @@
-// ============================================================
-// GRIFASI PERFORMANCE — Desktop Shell
+﻿// ============================================================
+// Desktop Shell
 // ============================================================
 // Renderiza sidebar + topbar (clases .dk-* de css/desktop.css)
 // y mantiene su estado sincronizado con el Router.

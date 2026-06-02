@@ -1,5 +1,5 @@
-// ============================================================
-// GRIFASI PERFORMANCE — Capa de acceso a datos (Supabase)
+﻿// ============================================================
+// Capa de acceso a datos (Supabase)
 // ============================================================
 // Usa @supabase/supabase-js vía ESM CDN — sin build step.
 //

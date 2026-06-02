@@ -1,4 +1,4 @@
-// GRIFASI PERFORMANCE — Dashboard
+﻿// Dashboard
 (() => {
   let _lowCache = [];
   function _escapeHtml(str) {
