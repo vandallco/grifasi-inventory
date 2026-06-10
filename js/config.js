@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // Configuración global de la app
 // ============================================================
 // Este archivo se carga ANTES que cualquier otro script.
@@ -12,14 +12,17 @@
 //      → Supabase Dashboard → Settings → API → anon (public)
 //   ⚠️  Nunca uses la service_role key aquí — este archivo
 //      es público y cualquiera puede leerlo en el navegador.
+//   ⚠️  La RLS (Row Level Security) DEBE estar activa en cada
+//      tabla — la anon key da acceso al cliente y sólo RLS
+//      protege los datos.
 // ============================================================
 
 window.APP_CONFIG = Object.freeze({
 
   // ── Supabase ──────────────────────────────────────────────
   // Reemplazar con los valores reales del proyecto Supabase.
-  SUPABASE_URL:      'https://sgihjrxdoxuoaxpnhrcs.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnaWhqcnhkb3h1b2F4cG5ocmNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMTkxNzksImV4cCI6MjA5NDY5NTE3OX0.f7-69p5tJnn9aUDiWGUWiUCwzBO60mxbmAl3fg47joU',
+  SUPABASE_URL:      'REEMPLAZAR_CON_URL_SUPABASE',
+  SUPABASE_ANON_KEY: 'REEMPLAZAR_CON_ANON_KEY',
 
   // ── Identidad de la app ───────────────────────────────────
   APP_NAME: 'GRIFASI PERFORMANCE',
